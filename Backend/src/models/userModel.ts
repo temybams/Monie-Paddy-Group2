@@ -4,7 +4,7 @@ export interface UserInstance{
     fullName: string,
     email: string,
     phoneNumber: string,
-    bvn: String,
+    bvn: string,
     password: string,
 }
 
@@ -32,6 +32,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         minlength: 6
     }
+},
+{
+    timestamps: true
 })
 
 const User = mongoose.model<UserInstance>("User", userSchema)
