@@ -2,11 +2,20 @@ import { Request, Response } from "express";
 import User from "../models/userModel";
 import bcryptjs from "bcryptjs";
 import { generateToken } from "../utils/utils";
+import { signupValidation, options } from '../utils/signUpValidation';
 
 export const signup = async (req: Request, res: Response) => {
   try {
-    const { fullName, email, phoneNumber, bvn, password } = req.body;
+    // Validate request data
+    const { error, value } = signupValidation.validate(req.body, options);
+
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const { fullName, email, phoneNumber, bvn, password } = value;
     const hashedPassword = bcryptjs.hashSync(password, 10);
+
     // Check if a user with the same email already exists
     let user = await User.findOne({ email });
 
