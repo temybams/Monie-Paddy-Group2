@@ -20,17 +20,15 @@ const userSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: String,
-        minlength: 10,
-        maxlength: 11
+        required: true
     },
     bvn: {
         type: String,
-        minlength: 10,
-        maxlength: 11
+        required: true
     },
     password: {
         type: String,
-        minlength: 6
+        required: true
     }
 },
 {
