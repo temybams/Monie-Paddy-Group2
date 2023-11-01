@@ -1,40 +1,58 @@
 import mongoose from "mongoose";
 
-export interface UserInstance{
-    fullName: string,
-    email: string,
-    phoneNumber: string,
-    bvn: string,
-    password: string,
+export interface UserInstance extends mongoose.Document {
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  bvn: string;
+  password?: string;
+  ssoId?: string;
+  ssoProvider?: string;
+  verifiedEmail: boolean;
 }
 
-const userSchema = new mongoose.Schema({
-    fullName:{
-        type: String,
-        required: true
+const userSchema = new mongoose.Schema(
+  {
+    fullName: {
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
     },
     phoneNumber: {
-        type: String,
-        required: true
+      type: String,
+      minlength: 10,
+      maxlength: 11,
     },
     bvn: {
-        type: String,
-        required: true
+      type: String,
+      minlength: 10,
+      maxlength: 11,
     },
     password: {
-        type: String,
-        required: true
-    }
-},
-{
-    timestamps: true
-})
+      type: String,
+      minlength: 6,
+    },
+    ssoId: {
+      type: String,
+      required: true,
+    },
+    ssoProvider: {
+      type: String,
+    },
+    verifiedEmail: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-const User = mongoose.model<UserInstance>("User", userSchema)
+const User = mongoose.model<UserInstance>("User", userSchema);
 
-export default User
+export default User;
