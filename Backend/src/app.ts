@@ -4,7 +4,10 @@ import path from "path";
 import logger from "morgan";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import session from "express-session";
 
+import authRouter from "./routes/auth";
 import usersRouter from "./routes/usersRouter";
 import indexRouter from "./routes/indexRouter";
 import connectDB from "./config/dbConfig";
@@ -16,6 +19,22 @@ dotenv.config();
 connectDB();
 passportSetup();
 const app = express();
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET as string,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 // view engine setup
 app.set("views", path.join(__dirname, "..", "views"));
@@ -30,6 +49,7 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/auth", authRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {

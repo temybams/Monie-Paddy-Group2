@@ -1,32 +1,20 @@
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { config } from "dotenv";
 import passport from "passport";
+import User from "../models/userModel";
 
 config();
 
-const User: {
-  email: string | undefined;
-  googleId: string;
-  fullname: string | undefined;
-}[] = [
-  {
-    email: "jite@mail.com",
-    googleId: "1234567890",
-    fullname: "jite kob",
-  },
-];
 export default function passportSetup() {
   try {
-    const callbackURL =
-      process.env.NODE_ENV === "development"
-        ? process.env.GOOGLE_REDIRECT_URL_DEV
-        : process.env.GOOGLE_REDIRECT_URL;
+    const callbackURL = process.env.GOOGLE_REDIRECT_URL;
 
     passport.use(
       new GoogleStrategy(
         {
           clientID: process.env.GOOGLE_CLIENT_ID as string,
-          clientSecret: process.env.GOOGLE_SECRET as string,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+          callbackURL,
         },
         async function (_accessToken, _refreshToken, profile, done) {
           //extract info from google profile
@@ -35,23 +23,23 @@ export default function passportSetup() {
 
           //check if user already exits in db with the givn profile
 
-          //   let user = await User.findOne({ googleId: sub });
-          let user = User.find((i) => i.email === email);
+          let user = await User.findOne({ ssoId: sub });
           if (user) {
             return done(null, user);
           }
 
           //create an account for the user with info from google profile
 
-          const content = {
+          const userDetails = {
             email,
-            googleId: sub,
-            fullname: name,
+            ssoId: sub,
+            fullName: name,
+            ssoProvider: "Google",
+            verifiedEmail: true,
           };
 
-          User.push(content);
-          //   user = new User(content);
-          //   await user.save();
+          user = new User(userDetails);
+          await user.save();
           return done(null, user);
         }
       )
@@ -62,10 +50,9 @@ export default function passportSetup() {
     });
 
     passport.deserializeUser((id, done) => {
-      //   User.findbyId(id).then((user) => {
-      const user = User.find((i) => i.googleId === id);
-      done(null, user);
-      //   });
+      User.findById(id).then((user) => {
+        done(null, user);
+      });
     });
 
     console.log("passport setup done");
