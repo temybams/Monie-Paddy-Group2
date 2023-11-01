@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import User from "../models/userModel";
 import bcryptjs from "bcryptjs";
 import { generateToken } from "../utils/utils";
-import { signupValidation, options } from '../utils/signUpValidation';
+import { signupValidation, options } from '../utils/signupValidation';
 
 export const signup = async (req: Request, res: Response) => {
   try {
