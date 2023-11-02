@@ -8,6 +8,7 @@ export interface UserInstance {
   password: string;
   transactionPinSet?: boolean;
   transactionPin?: string;
+  _id: string
 }
 
 const userSchema = new mongoose.Schema(
