@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import User from "../models/userModel";
 import bcryptjs from "bcryptjs";
 import { generateToken } from "../utils/utils";
-import { signupValidation, loginValidation, options } from '../utils/signupValidation';
+import { signupValidation, options } from '../utils/signupValidation';
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -54,80 +54,8 @@ export async function login(req: Request, res: Response) {
     }
 
     //manual login
-    // Validate request data
-    const { error, value } = loginValidation.validate(req.body, options);
-
-    if (error) {
-      return res.status(400).json({ error: error.details[0].message });
-    }
-    const { email, password } = value;
-    // Check if a user with the same email already exists
-    if (!email || !password) {
-      return res.status(400).json({
-        message: 'Please provide an email and password',
-      });
-    }
-    const user = await User.findOne({ email }).select('+password');
-    if (!user) {
-      return res.status(404).json({
-        message: 'User not found',
-      });
-    }
-    // Check if password is correct
-    const isPasswordCorrect = await bcryptjs.compare(password, user.password);
-    console.log(password)
-    console.log(user.password)
-        // console.log(isPasswordCorrect)
-    if (!isPasswordCorrect) {
-      return res.status(401).json({
-        message: 'Invalid credentials',
-      });
-    }
-    // Generate token
-    const token = generateToken(user, res);
-    return res.status(200).json({
-      message: 'Login successful',
-      user,
-      token,
-    });
-
   } catch (error) {
     console.error("Error in Login ", error);
     return res.status(500).send("Internal server error");
   }
 }
-
-export async function createPin(req: Request, res: Response) {
-  try {
-    const { id } = req.params;
-    let { transactionPin, pinConfirmation } = req.body;
- 
-    transactionPin = transactionPin.toString();
-    pinConfirmation = pinConfirmation.toString();
- 
-    if (transactionPin.length !== 4 || !/^\d+$/.test(transactionPin)) {
-      return res.status(400).send('Invalid transaction pin');
-    }
- 
-    if (transactionPin !== pinConfirmation) {
-      return res.status(400).send('Transaction pin confirmation does not match');
-    }
- 
-    const salt = await bcryptjs.genSalt(10);
-    const hashedPin = await bcryptjs.hash(transactionPin, salt);
- 
-    const user = await User.findByIdAndUpdate(
-      id,
-      { transactionPin: hashedPin, transactionPinSet: true },
-      { new: true },
-    );
-    return res.status(200).json({
-      message: 'User updated successfully',
-      data: user,
-    });
-  } catch (error: any) {
-    return res.status(500).send('Internal server error: ' + error.message);
-  }
-}
-
-
