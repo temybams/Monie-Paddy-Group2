@@ -8,6 +8,11 @@ export const signupValidation = Joi.object({
   password: Joi.string().required().min(6),
 });
 
+export const loginValidation = Joi.object({
+  email: Joi.string().trim().lowercase().email().required(),
+  password: Joi.string().required().min(6),
+});
+
 export const options = {
     abortEarly: false,
     errors:{

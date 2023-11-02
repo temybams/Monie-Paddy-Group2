@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
-import User from '../models/userModel';
-import bcryptjs from 'bcryptjs';
-import { signupValidation, options } from '../utils/signUpValidation';
+import { Request, Response } from "express";
+import User from "../models/userModel";
+import bcryptjs from "bcryptjs";
+import { generateToken } from "../utils/utils";
+import { signupValidation, loginValidation, options } from '../utils/signupValidation';
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -20,19 +21,82 @@ export const signup = async (req: Request, res: Response) => {
 
     if (user) {
       return res.status(409).json({
-        message: 'User already exists',
+        message: "User already exists",
       });
     }
 
     // Create a new user
-    user = await User.create({ fullName, email, phoneNumber, bvn, password: hashedPassword });
+    user = await User.create({
+      fullName,
+      email,
+      phoneNumber,
+      bvn,
+      password: hashedPassword,
+    });
 
     return res.status(201).json({
-      message: 'User created successfully',
+      message: "User created successfully",
       user,
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'An error occurred' });
+    return res.status(500).json({ error: "An error occurred" });
   }
 };
+
+export async function login(req: Request, res: Response) {
+  try {
+    if (req.url.startsWith("/google/redirect?code=")) {
+      //google login
+      const token = generateToken(req.user, res);
+      const clientUrl = process.env.CLIENT_URL;
+      return res.redirect(`${clientUrl}/sso?token=${token}`);
+    }
+
+    //manual login
+    // Validate request data
+    const { error, value } = loginValidation.validate(req.body, options);
+
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+    const { email, password } = value;
+    // Check if a user with the same email already exists
+    if (!email || !password) {
+      return res.status(400).json({
+        message: 'Please provide an email and password',
+      });
+    }
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return res.status(404).json({
+        message: 'User not found',
+      });
+    }
+    // Check if password is correct
+    const isPasswordCorrect = await bcryptjs.compare(password, user.password);
+    console.log(password)
+    console.log(user.password)
+        // console.log(isPasswordCorrect)
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        message: 'Invalid credentials',
+      });
+    }
+    // Generate token
+    const token = generateToken(user, res);
+    return res.status(200).json({
+      message: 'Login successful',
+      user,
+      token,
+    });
+
+  } catch (error) {
+    console.error("Error in Login ", error);
+    return res.status(500).send("Internal server error");
+  }
+}
+
+
+
+
