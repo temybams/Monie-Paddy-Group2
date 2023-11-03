@@ -1,4 +1,7 @@
 import "./App.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Layout from "./components/shared/layout";
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login/login";
 import Signup from "./pages/Signup/signup";
