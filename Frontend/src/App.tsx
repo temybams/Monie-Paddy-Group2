@@ -1,13 +1,13 @@
 import "./App.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Layout from "./components/shared/layout";
+
 
 function App() {
   return (
-    <>
-      <div>hello world</div>
-      <a href="http://localhost:5500/auth/google">
-        <button>click me</button>{" "}
-      </a>
-    </>
+      <div>
+       <Layout />
+      </div>
   );
 }
 
