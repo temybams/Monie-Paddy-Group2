@@ -1,5 +1,7 @@
-import mongoose from "mongoose";
-
+import mongoose, { Document, Model } from "mongoose";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { NextFunction } from "express";
 export interface UserInstance extends mongoose.Document {
   fullName: string;
   email: string;
@@ -9,6 +11,11 @@ export interface UserInstance extends mongoose.Document {
   ssoId?: string;
   ssoProvider?: string;
   verifiedEmail: boolean;
+  transactionPinSet?: boolean;
+  transactionPin?: string;
+  matchPassword(enteredPassword: string): Promise<boolean>;
+  getSignedJwtToken(): string;
+  _id: string;
 }
 
 const userSchema = new mongoose.Schema(
@@ -38,7 +45,7 @@ const userSchema = new mongoose.Schema(
     },
     ssoId: {
       type: String,
-      required: true,
+      required: false,
     },
     ssoProvider: {
       type: String,
@@ -47,12 +54,49 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    transactionPinSet: {
+      type: Boolean,
+      default: false,
+    },
+    transactionPin: {
+      type: String,
+      required: false,
+      length: 4,
+    },
   },
+
   {
     timestamps: true,
   }
 );
 
-const User = mongoose.model<UserInstance>("User", userSchema);
+// Hash password before saving
+// userSchema.pre<UserInstance>("save", async function (next: Function) {
+//   if (!this.isModified("password")) {
+//     return next();
+//   }
+//   const salt = await bcrypt.genSalt(10);
+//   this.password = await bcrypt.hash(this.password, salt);
+//   return next();
+// });
+
+// // Compare entered password with hashed password in the database
+// userSchema.methods.matchPassword = async function (
+//   enteredPassword: string
+// ): Promise<boolean> {
+//   return bcrypt.compare(enteredPassword, this.password);
+// };
+
+// Sign JWT and return
+userSchema.methods.getSignedJwtToken = function (): string {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET || "", {
+    expiresIn: process.env.JWT_EXPIRES || "1h",
+  });
+};
+
+const User: Model<UserInstance> = mongoose.model<UserInstance>(
+  "User",
+  userSchema
+);
 
 export default User;
