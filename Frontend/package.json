@@ -15,7 +15,8 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.18.0"
+    "react-router-dom": "^6.18.0",  // Choose the version you want
+    // "styled-components": "^6.1.0",  // Include this line if you want to use styled-components
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
