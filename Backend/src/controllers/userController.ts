@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import User from "../models/userModel";
 import bcryptjs from "bcryptjs";
 import { generateToken } from "../utils/utils";
-import { signupValidation, options } from '../utils/signupValidation';
+import { signupValidation, options } from "../utils/signupValidation";
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -56,6 +56,39 @@ export async function login(req: Request, res: Response) {
     //manual login
   } catch (error) {
     console.error("Error in Login ", error);
+    return res.status(500).send("Internal server error");
+  }
+}
+
+export async function createPin(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    let { transactionPin, pinConfirmation } = req.body;
+
+    transactionPin = transactionPin.toString();
+    pinConfirmation = pinConfirmation.toString();
+
+    if (transactionPin.length !== 4 || !/^\d+$/.test(transactionPin)) {
+      return res.status(400).send("Invalid transaction pin");
+    }
+
+    if (transactionPin !== pinConfirmation) {
+      return res.status(400).send("Password confirmation does not match");
+    }
+
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPin = await bcryptjs.hash(transactionPin, salt);
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { transactionPin: hashedPin, transactionPinSet: true },
+      { new: true }
+    );
+    return res.status(200).json({
+      message: "User updated successfully",
+      data: user,
+    });
+  } catch (error: any) {
     return res.status(500).send("Internal server error");
   }
 }

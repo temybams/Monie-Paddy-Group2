@@ -1,5 +1,5 @@
 import express from 'express';
-// import { createPin } from '../controllers/userController';
+import { createPin } from '../controllers/userController';
 
 const router = express.Router();
 
@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
-// router.put('/createPin/:id', createPin); 
+router.put('/createPin/:id', createPin); 
 
 
 export default router;
