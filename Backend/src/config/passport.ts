@@ -23,7 +23,7 @@ export default function passportSetup() {
 
           //check if user already exits in db with the givn profile
 
-          let user = await User.findOne({ ssoId: sub });
+          let user = await User.findOne({ email });
           if (user) {
             return done(null, user);
           }

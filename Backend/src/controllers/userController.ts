@@ -14,7 +14,7 @@ export const signup = async (req: Request, res: Response) => {
     }
 
     const { fullName, email, phoneNumber, bvn, password } = value;
-    // const hashedPassword = bcryptjs.hashSync(password, 10);
+    const hashedPassword = bcryptjs.hashSync(password, 10);
 
     // Check if a user with the same email already exists
     let user = await User.findOne({ email });
@@ -31,7 +31,7 @@ export const signup = async (req: Request, res: Response) => {
       email,
       phoneNumber,
       bvn,
-      password,
+      password: hashedPassword,
     });
 
     return res.status(201).json({
