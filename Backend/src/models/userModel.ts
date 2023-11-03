@@ -11,9 +11,9 @@ export interface IUser extends Document {
   password: string;
   transactionPinSet?: boolean;
   transactionPin?: string;
-  
   matchPassword(enteredPassword: string): Promise<boolean>;
   getSignedJwtToken(): string;
+  _id: string
 }
 
 const userSchema = new mongoose.Schema<IUser>({
