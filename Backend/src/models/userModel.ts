@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 
-export interface UserInstance {
+export interface UserInstance extends mongoose.Document {
   fullName: string;
   email: string;
   phoneNumber: string;
   bvn: string;
-  password: string;
-  transactionPinSet?: boolean;
-  transactionPin?: string;
-  _id: string
+  password?: string;
+  ssoId?: string;
+  ssoProvider?: string;
+  verifiedEmail: boolean;
 }
 
 const userSchema = new mongoose.Schema(
@@ -24,24 +24,28 @@ const userSchema = new mongoose.Schema(
     },
     phoneNumber: {
       type: String,
-      required: true,
+      minlength: 10,
+      maxlength: 11,
     },
     bvn: {
       type: String,
-      required: true,
+      minlength: 10,
+      maxlength: 11,
     },
     password: {
       type: String,
+      minlength: 6,
+    },
+    ssoId: {
+      type: String,
       required: true,
     },
-    transactionPinSet: {
+    ssoProvider: {
+      type: String,
+    },
+    verifiedEmail: {
       type: Boolean,
       default: false,
-    },
-    transactionPin: {
-      type: String,
-      required: false,
-      length: 4,
     },
   },
   {
