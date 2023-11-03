@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema(
     },
     ssoId: {
       type: String,
-      required: true,
+      required: false,
     },
     ssoProvider: {
       type: String,
