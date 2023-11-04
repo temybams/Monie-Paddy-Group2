@@ -54,6 +54,35 @@ export async function login(req: Request, res: Response) {
     }
 
     //manual login
+    const { email, password } = req.body;
+    // Check if a user with the same email already exists
+    if (!email || !password) {
+      return res.status(400).json({
+        message: 'Please provide an email and password',
+      });
+    }
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return res.status(404).json({
+        message: 'User not found',
+      });
+    }
+    // Check if password is correct
+    const isPasswordCorrect = await bcryptjs.compare(password, user.password);
+    console.log(password)
+    console.log(user.password)
+        // console.log(isPasswordCorrect)
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        message: 'Invalid credentials',
+      });
+    }
+    const token = generateToken(user, res);
+    return res.status(200).json({
+      message: 'User logged in successfully',
+      token,
+      user,
+    });
   } catch (error) {
     console.error("Error in Login ", error);
     return res.status(500).send("Internal server error");
