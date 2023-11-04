@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.post("/login", user.login);
 router.post("/signup", user.signup)
+router.put('/createPin/:id', user.createPin); 
 
 router.get(
   "/google",
