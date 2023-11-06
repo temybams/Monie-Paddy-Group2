@@ -1,8 +1,7 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import userPhoto from "../../../public/assets/Ellipse 134.svg";
-import doticon from "../../../public/assets/Ellipse 141.svg";
-import bellicon from "../../../public/assets/notification.png";
+import userPhoto from "../../../../public/assets/Ellipse 134.svg";
+import doticon from "../../../../public/assets/Ellipse 141.svg";
+import bellicon from "../../../../public/assets/notification.png";
 import './Topbar.css';
 
 function Topbar() {

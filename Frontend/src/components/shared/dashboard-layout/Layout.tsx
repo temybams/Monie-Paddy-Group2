@@ -1,7 +1,7 @@
-import Topbar from './Topbar'; 
-import Sidebar from './Sidebar'; 
+import Topbar from '../topbar/Topbar'; 
+import Sidebar from '../sidebar/Sidebar'; 
 import './Layout.css'; 
-import Transactions from './Transactions';
+import Transactions from '../transactions/Transactions';
 
 function Layout() {
   return (
