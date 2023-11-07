@@ -32,7 +32,7 @@ function Signup() {
           <RegisterBox className="my-4">
             <h2 style={{ fontSize: "32px" }}>Sign Up</h2>
             <p style={{ fontSize: "16px" }}>
-              Create an account to enjoy our benefits
+              Create an account to enjoy our benefits✨
             </p>
           </RegisterBox>
           <GoogleSignin href={`http://localhost:5500/auth/google`}>
