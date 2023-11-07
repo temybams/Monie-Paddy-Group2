@@ -96,7 +96,7 @@ function Signup() {
             bvn: "",
           });
           setSubmit(false);
-          navigate("/dashboard");
+          navigate("/login");
         })
         .catch((err) => {
           if (err.response) {

@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const { NODE_ENV } = import.meta.env;
+const { VITE_APP_NODE_ENV } = import.meta.env;
 const baseURL =
-  NODE_ENV === "development"
+  VITE_APP_NODE_ENV === "development"
     ? "http://localhost:5500"
     : "http://tobeactivated.onrender.com/";
 const Api = axios.create({
