@@ -16,14 +16,113 @@ import {
   ExtLink,
 } from "./Signup.style";
 import googleLogo from "/google-logo.svg";
-import { FormEvent } from "react";
-// import { InputFieldWeb } from "./InputFieldWeb";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Api from "../../api.config";
+import { useGoogleLogin } from "@react-oauth/google";
 
 function Signup() {
+  const [signUpData, setSignUpData] = useState({
+    email: "",
+    password: "",
+    fullName: "",
+    phoneNumber: "",
+    bvn: "",
+  });
+  const [submit, setSubmit] = useState(false);
+  const navigate = useNavigate();
+
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse: { access_token: string }) => {
+      axios
+        .get(
+          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${codeResponse.access_token}`,
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          Api.post(`/auth/google/redirect`, res.data)
+            .then((response) => {
+              const { message } = response.data;
+              navigate("/dashboard");
+              console.log(message);
+              setSubmit(false);
+            })
+            .catch((err) => {
+              if (err.response) {
+                const errorCode = err.response.status;
+                console.log(`auth failed with status code: ${errorCode}`);
+              } else {
+                console.log(err);
+              }
+              setSubmit(false);
+            });
+        });
+    },
+    onError: (error) => {
+      console.log("Failed to get token using the Google OAuth flow.", error);
+      //navigate('/')
+      setSubmit(false);
+    },
+  });
+
+  function googlePassport() {
+    if (!submit) {
+      setSubmit(true);
+      login();
+    }
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    console.log("Form submitted");
+    if (!submit) {
+      setSubmit(true);
+      console.log("submitting form");
+      console.log(signUpData);
+      Api.post("/signup", signUpData)
+        .then((res) => {
+          const { message } = res.data;
+          console.log(message);
+          console.log("login successful");
+          setSignUpData({
+            email: "",
+            password: "",
+            fullName: "",
+            phoneNumber: "",
+            bvn: "",
+          });
+          setSubmit(false);
+          navigate("/login");
+        })
+        .catch((err) => {
+          if (err.response) {
+            const errorCode = err.response.status;
+            console.error(`Problem occured received status: ${errorCode}`);
+          } else {
+            console.error("Did not receive response");
+          }
+          console.log("login failed", err.response);
+          setSignUpData({
+            email: "",
+            password: "",
+            fullName: "",
+            phoneNumber: "",
+            bvn: "",
+          });
+          setSubmit(false);
+        });
+    }
   }
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+    setSignUpData({ ...signUpData, [name]: value });
+  }
+
   return (
     <Wrapper>
       <div className="row">
@@ -35,7 +134,7 @@ function Signup() {
               Create an account to enjoy our benefits
             </p>
           </RegisterBox>
-          <GoogleSignin href={`http://localhost:5500/auth/google`}>
+          <GoogleSignin href={`#`} onClick={googlePassport}>
             <GooglesLogo src={googleLogo} alt="google logo" />
             Sign up with Google
           </GoogleSignin>
@@ -53,6 +152,9 @@ function Signup() {
                 id="fullname"
                 placeholder="John Doe"
                 type="text"
+                onChange={handleChange}
+                value={signUpData.fullName}
+                name="fullName"
                 required
               />
             </div>
@@ -64,6 +166,9 @@ function Signup() {
                 id="email"
                 placeholder="name@example.com"
                 type="email"
+                onChange={handleChange}
+                value={signUpData.email}
+                name="email"
                 required
               />
             </div>
@@ -75,6 +180,9 @@ function Signup() {
                 id="phoneNumber"
                 placeholder="0812345678"
                 type="tel"
+                onChange={handleChange}
+                value={signUpData.phoneNumber}
+                name="phoneNumber"
                 required
               />
             </div>
@@ -86,6 +194,9 @@ function Signup() {
                 id="bvn"
                 placeholder="22516146577"
                 type="number"
+                onChange={handleChange}
+                value={signUpData.bvn}
+                name="bvn"
                 required
               />
             </div>
@@ -97,6 +208,9 @@ function Signup() {
                 id="password"
                 placeholder="Password123@"
                 type="password"
+                onChange={handleChange}
+                value={signUpData.password}
+                name="password"
                 required
               />
             </div>
