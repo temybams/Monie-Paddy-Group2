@@ -46,40 +46,44 @@ export const signup = async (req: Request, res: Response) => {
 
 export async function login(req: Request, res: Response) {
   try {
-    if (req.url.startsWith("/google/redirect?code=")) {
-      //google login
-      const token = generateToken(req.user, res);
-      const clientUrl = process.env.CLIENT_URL;
-      return res.redirect(`${clientUrl}/sso?token=${token}`);
-    }
+    // if (req.url.startsWith("/google/redirect?code=")) {
+    //   //google login
+    //   const token = generateToken(req.user, res);
+    //   const clientUrl = process.env.CLIENT_URL;
+    //   return res.redirect(`${clientUrl}/sso?token=${token}`);
+    // }
 
     //manual login
     const { email, password } = req.body;
     // Check if a user with the same email already exists
     if (!email || !password) {
+      console.log("req.body: ", req.body);
       return res.status(400).json({
-        message: 'Please provide an email and password',
+        message: "Please provide an email and password",
       });
     }
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(404).json({
-        message: 'User not found',
+        message: "User not found",
       });
     }
     // Check if password is correct
-    const isPasswordCorrect = await bcryptjs.compare(password, user.password);
-    console.log(password)
-    console.log(user.password)
-        // console.log(isPasswordCorrect)
+    const isPasswordCorrect = await bcryptjs.compare(
+      password,
+      user.password as string
+    );
+    console.log("password: ", password);
+    console.log("user.password: ", user.password);
+    // console.log(isPasswordCorrect)
     if (!isPasswordCorrect) {
       return res.status(401).json({
-        message: 'Invalid credentials',
+        message: "Invalid credentials",
       });
     }
     const token = generateToken(user, res);
     return res.status(200).json({
-      message: 'User logged in successfully',
+      message: "User logged in successfully",
       token,
       user,
     });
@@ -119,5 +123,39 @@ export async function createPin(req: Request, res: Response) {
     });
   } catch (error: any) {
     return res.status(500).send("Internal server error");
+  }
+}
+
+export async function googleSignOn(req: Request, res: Response) {
+  try {
+    const { id, email, name } = req.body;
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = await User.create({
+        email,
+        fullName: name,
+        ssoId: id,
+        ssoProvider: "Google",
+        verifiedEmail: true,
+      });
+
+      await user.save();
+    }
+
+    if (!user.ssoProvider) {
+      (user.ssoId = id), (user.ssoProvider = "Google"), await user.save();
+    }
+
+    const token = generateToken(user, res);
+
+    res.json({
+      message: `signed in as ${user.email}`,
+      token,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
   }
 }

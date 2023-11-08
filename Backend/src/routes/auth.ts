@@ -7,8 +7,8 @@ const router = express.Router();
 //auth
 
 router.post("/login", user.login);
-router.post("/signup", user.signup)
-router.put('/createPin/:id', user.createPin); 
+router.post("/signup", user.signup);
+router.put("/createPin/:id", user.createPin);
 
 router.get(
   "/google",
@@ -16,5 +16,6 @@ router.get(
 );
 
 router.get("/google/redirect", passport.authenticate("google"), user.login);
+router.post("/google/redirect", user.googleSignOn);
 
 export default router;
