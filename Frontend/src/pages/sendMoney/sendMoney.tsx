@@ -62,6 +62,7 @@ export const InputField = styled.input`
   border: 1px solid #ccc;
   border-radius: 8px;
 
+
   &:focus {
     outline: none;
     border: 2px solid var(--Pri-Color);
@@ -70,6 +71,9 @@ export const InputField = styled.input`
   @media (min-width: 768px) {
     padding: 16px 12px;
   }
+`;
+
+const AccountNumberInput = styled.input`
 `;
 
 const SelectField = styled.select`
@@ -129,8 +133,8 @@ function SendMoney() {
                 id="accountNumber"
                 placeholder="Account Number"
                 type="number"
-                required
                 inputMode="none"
+                required
               />
             </div>
             <div className="my-3">
