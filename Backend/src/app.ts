@@ -10,6 +10,7 @@ import session from "express-session";
 import authRouter from "./routes/auth";
 import usersRouter from "./routes/usersRouter";
 import indexRouter from "./routes/indexRouter";
+import transactionsRouter from "./routes/transactionsRouter";
 import connectDB from "./config/dbConfig";
 import passportSetup from "./config/passport";
 
@@ -50,6 +51,7 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/auth", authRouter);
+app.use("/transactions", transactionsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {
