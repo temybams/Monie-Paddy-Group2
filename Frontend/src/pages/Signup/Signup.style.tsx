@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import '../../App.css'
 
 export const Wrapper = styled.div`
   width: 100%;
@@ -32,11 +33,14 @@ export const StylishText = styled.h1`
 `;
 
 export const RegisterBox = styled.div`
-  width: 316px;
+  width: 329px;
   height: 84px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  font-family: Inter;
+  
+
 `;
 
 export const GoogleSignin = styled.a`
@@ -131,3 +135,6 @@ export const ExtLink = styled.a`
   text-decoration: none;
   color: var(--Pri-Color);
 `;
+
+export const roundedRectangle = styled.svg`
+`

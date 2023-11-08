@@ -4,6 +4,7 @@ import Signup from "./pages/Signup/signup";
 import Sso from "./pages/sso/Sso";
 import Homepage from "./pages/homepage/Homepage";
 import Layout from "./components/shared/dashboard-layout/Layout";
+import SendMoney from "./pages/sendMoney/sendMoney";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Layout />} />
         <Route path="/sso" element={<Sso />} />
+        <Route path="/send-money" element={<SendMoney />} />
       </Routes>
     </BrowserRouter>
   );
