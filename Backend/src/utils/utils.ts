@@ -20,7 +20,7 @@ export function generateToken(user: UserInstance, res: Response) {
   });
 
   //save token as a cookie
-  res.cookie("token,", token, {
+  res.cookie("token", token, {
     httpOnly: true,
     maxAge: expiresIn * 1000,
   });

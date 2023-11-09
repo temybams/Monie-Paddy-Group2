@@ -16,6 +16,7 @@ export interface UserInstance extends mongoose.Document {
   matchPassword(enteredPassword: string): Promise<boolean>;
   getSignedJwtToken(): string;
   _id: string;
+  balance: number;
 }
 
 const userSchema = new mongoose.Schema(
@@ -60,8 +61,12 @@ const userSchema = new mongoose.Schema(
     },
     transactionPin: {
       type: String,
-      required: false,
+      default: "0000",
       length: 4,
+    },
+    balance: {
+      type: Number,
+      default: 0,
     },
   },
 
