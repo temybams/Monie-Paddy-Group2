@@ -97,14 +97,6 @@ top: 88px;
 left: 0px;
 `;
 
-const SelectField = styled.select`
-  width: 100%;
-  padding: 16px 12px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-`;
-
 export const SubmitForm = styled.button`
   width: 100%;
   border-radius: 4px;
@@ -125,13 +117,13 @@ export const SubmitForm = styled.button`
   }
 `;
 
-function SendMoney() {
+function SendMoneyII() {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     console.log("submitting form");
   }
   return (
-    <Wrapper >
+    <Wrapper>
       <Topbar />
       <Sidebar />
       <Area />
@@ -146,22 +138,21 @@ function SendMoney() {
           <form onSubmit={handleSubmit}>
             <div className="my-3">
               <InputHead>
-                <Label htmlFor="bankName">Bank Name</Label>
+                <Label htmlFor="bankNote">Note (optional)</Label>
               </InputHead>
-              <SelectField id="bankName" required>
-                <option value="">Select a Bank</option>
-                <option value="bank1">Access Bank</option>
-                <option value="bank2">Sterling Bank</option>
-                <option value="bank3">First Bank</option>
-              </SelectField>
             </div>
+              <InputField
+                id="bankNote"
+                placeholder="Enter a transaction note"
+                type="text"
+              />
             <div className="my-3">
               <InputHead>
-                <Label htmlFor="accountNumber">Account Number</Label>
+                <Label htmlFor="amount">Amount</Label>
               </InputHead>
               <InputField
-                id="accountNumber"
-                placeholder="Account Number"
+                id="amount"
+                placeholder="Enter an amount"
                 type="number"
                 inputMode="none"
                 required
@@ -169,12 +160,12 @@ function SendMoney() {
             </div>
             <div className="my-3">
               <InputHead>
-                <Label htmlFor="accountName">Account Name</Label>
+                <Label htmlFor="pin">Pin</Label>
               </InputHead>
               <InputField
-                id="accountName"
-                placeholder="Account Name"
-                type="text"
+                id="pin"
+                placeholder="Enter your transaction pin"
+                type="number"
                 required
               />
             </div>
@@ -190,4 +181,4 @@ function SendMoney() {
   );
 }
 
-export default SendMoney;
+export default SendMoneyII;

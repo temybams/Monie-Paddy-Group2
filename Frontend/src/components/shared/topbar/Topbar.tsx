@@ -12,7 +12,7 @@ function Topbar() {
         <div className="mt-2 align-items-center justify-content-center"> 
             <Link to="/" className="navbar-brand">
 
-            <h1 className='home-link ms-2'>Home</h1>
+            <h1 className='home-link ms-2'>{location.pathname === '/payment' ? 'Payment' : 'Home'}</h1>
               <img src={doticon} alt="User Profile" className=" ms-4 user-icon align-items-center d-flex flex-column"/> 
             </Link>
           </div>
