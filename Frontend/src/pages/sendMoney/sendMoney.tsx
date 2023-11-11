@@ -73,8 +73,8 @@ export const InputField = styled.input`
   }
 `;
 
-const AccountNumberInput = styled.input`
-`;
+// const AccountNumberInput = styled.input`
+// `;
 
 const SelectField = styled.select`
   width: 100%;
