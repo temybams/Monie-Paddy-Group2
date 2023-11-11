@@ -22,7 +22,7 @@ export async function buyAirtime(req: Request, res: Response) {
     console.log(user.transactionPin, transactionPin);
     if (
       user.transactionPin !== transactionPin &&
-      !Bcrypt.compareSync(transactionPin, user.transactionPin)
+      !Bcrypt.compareSync(transactionPin, user.transactionPin as string)
     ) {
       return res.status(400).json({
         message: "Invalid transaction pin",
