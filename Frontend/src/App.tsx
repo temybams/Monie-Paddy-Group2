@@ -4,7 +4,7 @@ import Signup from "./pages/Signup/signup";
 import Sso from "./pages/sso/Sso";
 import Homepage from "./pages/homepage/Homepage";
 import Layout from "./components/shared/dashboard-layout/Layout";
-import SendMoney from "./pages/sendMoney/sendMoney";
+import SendMoney from "./pages/Payment/sendMoney/sendMoney";
 import Payment from "./pages/Payment/payment";
 import Airtime from "./pages/Payment/Airtime/Airtime";
 function App() {
