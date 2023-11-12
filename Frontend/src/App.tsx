@@ -7,6 +7,7 @@ import Layout from "./components/shared/dashboard-layout/Layout";
 import SendMoney from "./pages/Payment/sendMoney/sendMoney";
 import Payment from "./pages/Payment/payment";
 import Airtime from "./pages/Payment/Airtime/Airtime";
+import CreatePin from "./components/shared/modal/TransactionPin";
 function App() {
   return (
     <BrowserRouter>
@@ -19,6 +20,17 @@ function App() {
         <Route path="/send-money" element={<SendMoney />} />
         <Route path="/payments" element={<Payment />} />
         <Route path="/airtime" element={<Airtime />} />
+        <Route
+          path="/create-pin"
+          element={
+            <CreatePin
+              display={true}
+              dismiss={function (): void {
+                throw new Error("Function not implemented.");
+              }}
+            />
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

@@ -117,7 +117,7 @@ function LoginPage() {
           </RegisterBox>
           <GoogleSignin href={`#`} onClick={googlePassport}>
             <GooglesLogo src={googleLogo} alt="google logo" />
-            Sign up with Google
+            Sign in with Google
           </GoogleSignin>
           <Strikethrough className="my-4">
             <Strike />

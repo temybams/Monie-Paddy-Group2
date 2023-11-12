@@ -9,6 +9,7 @@
     "build": "yarn --ignore-engines && npx tsc"
   },
   "dependencies": {
+    "axios": "^1.6.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "~1.16.0",
     "cookie-parser": "^1.4.6",

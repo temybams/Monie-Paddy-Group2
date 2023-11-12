@@ -3,6 +3,8 @@ import Transaction from "../models/transactionmodel";
 import { airtimeValidation, options } from "../utils/signupValidation";
 import User from "../models/userModel";
 import Bcrypt from "bcryptjs";
+import { calculateBalance } from "../utils/utils";
+import { buyAirtimeFromBloc } from "../utils/bloc";
 
 export async function buyAirtime(req: Request, res: Response) {
   const userId = req.user;
@@ -18,8 +20,11 @@ export async function buyAirtime(req: Request, res: Response) {
       message: "User not found",
     });
   const { amount, phoneNumber, network, transactionPin } = req.body;
+  const amountInKobo = amount * 100;
   try {
-    console.log(user.transactionPin, transactionPin);
+    const userBalance = await calculateBalance(userId);
+    user.balance = userBalance;
+    await user.save();
     if (
       user.transactionPin !== transactionPin &&
       !Bcrypt.compareSync(transactionPin, user.transactionPin as string)
@@ -28,19 +33,42 @@ export async function buyAirtime(req: Request, res: Response) {
         message: "Invalid transaction pin",
       });
     }
-    if (user.balance < amount)
+    if (user.balance < amountInKobo)
       return res.status(400).json({
         message: "Insufficient balance",
       });
 
+    //call the airtime api (blochq)
+    const response = await buyAirtimeFromBloc(
+      amountInKobo,
+      phoneNumber,
+      network
+    );
+
+    if (!response.success) {
+      return res.status(400).json(response);
+    }
+
+    const { status, reference } = response.data;
+
     const transaction = new Transaction({
-      amount,
+      amount: amountInKobo,
       phoneNumber,
       network,
       userId,
       transactionType: "airtime",
+      credit: false,
+      reference,
+      status,
     });
-    transaction.save();
+    await transaction.save();
+    if (status !== "successful") {
+      return res.status(400).json({
+        message: "Airtime purchase successful",
+        data: transaction,
+      });
+    }
+
     user.balance -= amount;
     user.save();
     res.json({
