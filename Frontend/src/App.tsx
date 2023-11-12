@@ -5,6 +5,7 @@ import Sso from "./pages/sso/Sso";
 import Homepage from "./pages/homepage/Homepage";
 import Layout from "./components/shared/dashboard-layout/Layout";
 import SendMoney from "./pages/sendMoney/sendMoney";
+import Dashboard from "./pages/dashboard/Dashboard";
 
 function App() {
   return (
