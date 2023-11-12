@@ -3,7 +3,7 @@ import Api from "../../../api.config";
 import Topbar from "../../../components/shared/topbar/Topbar";
 import Sidebar from "../../../components/shared/sidebar/Sidebar";
 import "./Airtime.css";
-import phone from "./Vector.png";
+import phone from "../assets/Vector.png";
 
 export default function Airtime() {
   const [formData, setFormData] = useState({
