@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import Sidebar from "../../components/shared/sidebar/Sidebar";
-import Topbar from "../../components/shared/topbar/Topbar";
+import Sidebar from "../../../components/shared/sidebar/Sidebar";
+import Topbar from "../../../components/shared/topbar/Topbar";
 
 const Wrapper = styled.div`
   position: relative;
@@ -39,10 +39,9 @@ const FormContainer = styled.div`
   background-color: #fff;
   width: 600px;
   height: 715px;
-  padding : 20px;
-  margin-left: -15%
+  padding: 20px;
+  margin-left: -15%;
 `;
-
 
 export const InputHead = styled.div`
   display: flex;
@@ -62,7 +61,6 @@ export const InputField = styled.input`
   border: 1px solid #ccc;
   border-radius: 8px;
 
-
   &:focus {
     outline: none;
     border: 2px solid var(--Pri-Color);
@@ -73,13 +71,12 @@ export const InputField = styled.input`
   }
 `;
 
-const AccountNumberInput = styled.input`
-`;
+const AccountNumberInput = styled.input``;
 
 const SelectField = styled.select`
   width: 100%;
   padding: 16px 12px;
-    margin-bottom: 10px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
 `;
@@ -109,7 +106,7 @@ function SendMoney() {
     <Wrapper>
       <Topbar />
       <Sidebar />
-      <Area/>
+      <Area />
       <AccountDetailsForm>
         <FormContainer>
           <form>
@@ -117,13 +114,12 @@ function SendMoney() {
               <InputHead>
                 <Label htmlFor="bankName">Bank Name</Label>
               </InputHead>
-          <SelectField id="bankName" required>
-          <option value="">Select a Bank</option>
-          <option value="bank1">Access Bank</option>
-          <option value="bank2">Sterling Bank</option>
-          <option value="bank3">First Bank</option>
-        </SelectField>
-
+              <SelectField id="bankName" required>
+                <option value="">Select a Bank</option>
+                <option value="bank1">Access Bank</option>
+                <option value="bank2">Sterling Bank</option>
+                <option value="bank3">First Bank</option>
+              </SelectField>
             </div>
             <div className="my-3">
               <InputHead>
@@ -146,15 +142,15 @@ function SendMoney() {
                 placeholder="Account Name"
                 type="text"
                 required
-                />
+              />
             </div>
             <div className="mt-5">
               <SubmitForm type="submit">Send Money</SubmitForm>
             </div>
           </form>
         </FormContainer>
-      {/* //form with fields for bank name, account number, account name, and submit button */}
-                </AccountDetailsForm>
+        {/* //form with fields for bank name, account number, account name, and submit button */}
+      </AccountDetailsForm>
     </Wrapper>
   );
 }

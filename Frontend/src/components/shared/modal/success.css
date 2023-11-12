@@ -1,0 +1,126 @@
+/* SuccessModal.css
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #00AFB9;
+    z-index: 9999;
+  }
+  
+  .modal-dialog {}
+  
+  .modal-content {}
+  
+  .modal-title {
+    color: #FFF;
+    text-align: center;
+    font-size: 52px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 72px;
+    letter-spacing: -1.04px;
+  }
+  
+  .modal-body {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .modal-image {
+    max-width: 105px;
+    height: 101px;
+    position: fixed;
+    z-index: 9999;
+  }
+  
+  .modal-image-2 {
+    max-width: 140px;
+    height: 136px;
+    position: fixed;
+    z-index: 9999;
+  }
+  
+  .modal-image-3 {
+    max-width: 109px;
+    height: 106px;
+    position: fixed;
+    z-index: 9999;
+  }
+  
+  .modal-image-4 {
+    max-width: 103px;
+    height: 101px;
+    position: fixed;
+    z-index: 9999;
+  }
+  
+  .modal-image-5 {
+    max-width: 76px;
+    height: 74px;
+    position: fixed;
+    z-index: 9999;
+  }
+  
+  .modal-image-6 {
+    max-width: 76px;
+    height: 74px;
+    position: fixed;
+    z-index: 9999;
+  }
+  
+  .modal-image-7 {
+    max-width: 103px;
+    height: 101px;
+    position: fixed;
+    z-index: 9999;
+  }
+  
+  .modal-image-8 {
+    max-width: 49.5px;
+    height: 48.3px;
+    position: fixed;
+    z-index: 9999;
+  }
+  
+  .modal-image-9 {
+    max-width: 49.5px;
+    height: 48.3px;
+    position: fixed;
+    z-index: 9999;
+  }
+  
+  .modal-image-10 {
+    max-width: 164px;
+    height: 160px;
+    position: fixed;
+    z-index: 9999;
+  }
+  
+  .modal p {
+    color: #FFF;
+    text-align: center;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 28px;
+    letter-spacing: -0.4px;
+  }
+  
+  .modal button {
+    background-color: #ffffff;
+    color: #00AFB9;
+    width: 232px;
+    height: 64px;
+  }
+  .modal.show {
+    display: block;
+  }
+  
+  .modal.hide {
+    display: none;
+  } */
