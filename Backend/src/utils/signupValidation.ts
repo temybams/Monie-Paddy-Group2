@@ -25,6 +25,14 @@ export const airtimeValidation = Joi.object({
   transactionPin: Joi.string().required(),
 });
 
+export const validBankTransfer = Joi.object({
+  amount: Joi.number().required().min(50000).max(10000000),
+  pin: Joi.string().required(),
+  accountName: Joi.string().required(),
+  accountNumber: Joi.string().required(),
+  bankName: Joi.string().required(),
+  note: Joi.string().allow(''),
+});
 export const options = {
   abortEarly: false,
   errors: {

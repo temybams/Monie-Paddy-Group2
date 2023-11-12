@@ -5,6 +5,8 @@ export interface TransactionInstance extends Document {
   amount: number;
   transactionType: string;
   note?: string;
+  credit: boolean;
+  reference?: string;
   bankName: string;
   accountNumber: string;
   accountName: string;
@@ -19,7 +21,9 @@ const TransactionSchema = new Schema<TransactionInstance>(
     userId: { type: String, required: true },
     amount: { type: Number, required: true },
     transactionType: { type: String, required: true },
-    note: { type: String, default: "" },
+    note: { type: String, required: false },
+    credit: { type: Boolean, required: true },
+    reference: { type: String },
     bankName: { type: String },
     accountNumber: { type: String },
     accountName: { type: String },
