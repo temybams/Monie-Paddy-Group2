@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { FC } from 'react';
-import successImage1 from '../../../../public/assets/sucessImage1.png';
+import successImage1 from '/assets/sucessImage1.png';
 
 interface SuccessModalProps {
   show: boolean;
