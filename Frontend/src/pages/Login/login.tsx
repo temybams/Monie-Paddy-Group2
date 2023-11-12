@@ -15,7 +15,7 @@ import {
   SubmitForm,
   ExtLink,
 } from "./Login.style";
-import googleLogo from "/google-logo.svg";
+import googleLogo from "../../assets/google-logo.svg";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";

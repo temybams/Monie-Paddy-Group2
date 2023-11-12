@@ -6,7 +6,6 @@ import Phone from "./assets/Vector.png"
 import Wallet from "./assets/wallet.png"
 import Connection from "./assets/connection.png"
 import Bolt from "./assets/Bolt.png"
-import "./payment.css"
 
 
 export default function payment() {

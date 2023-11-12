@@ -1,8 +1,7 @@
-
 import { Link } from 'react-router-dom';
-import settingicon from "../../../../public/assets/settings.png";
-import layersicon from "../../../../public/assets/layers.svg";
-import bankicon from "../../../../public/assets/Bank.svg";
+import settingicon from "../../../assets/settings.png";
+import layersicon from "../../../assets/layers.svg";
+import bankicon from "../../../assets/Bank.svg";
 import './Sidebar.css';
 
 function Sidebar() {

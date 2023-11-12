@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import userPhoto from "../../../../public/assets/Ellipse 134.svg";
-import doticon from "../../../../public/assets/Ellipse 141.svg";
-import bellicon from "../../../../public/assets/notification.png";
+import userPhoto from "../../../assets/Ellipse 134.svg";
+import doticon from "../../../assets/Ellipse 141.svg";
+import bellicon from "../../../assets/notification.png";
 import { useState } from 'react';
 import SuccessModal from '../modal/successPage';
 import './Topbar.css';
