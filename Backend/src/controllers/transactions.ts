@@ -8,9 +8,7 @@ import {
 } from "../utils/signupValidation";
 import User from "../models/userModel";
 import Bcrypt from "bcryptjs";
-import { calculateBalance } from "../utils/utils";
 import axios from "axios";
-import { buyAirtimeFromBloc } from "../utils/bloc";
 import { calculateBalance } from "../utils/utils";
 import { buyAirtimeFromBloc } from "../utils/bloc";
 

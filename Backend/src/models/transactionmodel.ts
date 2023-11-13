@@ -14,9 +14,6 @@ export interface TransactionInstance extends Document {
   phoneNumber: string;
   network: string;
   status: string;
-  credit: boolean;
-  reference: string;
-  status: string;
   dataPlan: string;
   electricityMeterNo: string;
 }
@@ -29,6 +26,7 @@ const TransactionSchema = new Schema<TransactionInstance>(
     note: { type: String, required: false },
     credit: { type: Boolean, required: true },
     reference: { type: String },
+    status: { type: String },
     bankName: { type: String },
     accountNumber: { type: String },
     accountName: { type: String },

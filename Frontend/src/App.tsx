@@ -8,7 +8,6 @@ import Payment from "./pages/Payment/payment";
 import Airtime from "./pages/Payment/Airtime/Airtime";
 import Dashboard from "./pages/dashboard/Dashboard";
 import CreatePin from "./components/shared/modal/TransactionPin";
-import CreatePin from "./components/shared/modal/TransactionPin";
 function App() {
   return (
     <BrowserRouter>
