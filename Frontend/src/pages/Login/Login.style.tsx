@@ -126,6 +126,20 @@ export const SubmitForm = styled.button`
   }
 `;
 
+export const StyledImage = styled.img`
+  width: 100%;
+  height: 72%;
+  background-color: #e3f1fe;
+`;
+
+export const Text = styled.h1`
+  font-family: "Holtwood One SC";
+  color: #000;
+  font-size: 19px;
+  font-weight: 250;
+  padding: 45px 25px;
+`;
+
 export const ExtLink = styled.a`
   text-decoration: none;
   color: var(--Pri-Color);
