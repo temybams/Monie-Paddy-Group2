@@ -63,11 +63,19 @@ export async function buyAirtime(req: Request, res: Response) {
 
     if (!response.success) {
       console.error("purchase failed from bloc");
+      console.error(response);
       return res.status(400).json(response);
     }
 
     const { status, reference } = response.data;
 
+    if (status !== "successful") {
+      console.error("Airtime purchase not successful");
+      return res.status(400).json({
+        message: "Airtime purchase not successful",
+        data: reference,
+      });
+    }
     const transaction = new Transaction({
       amount: amountInKobo,
       phoneNumber,
@@ -79,12 +87,6 @@ export async function buyAirtime(req: Request, res: Response) {
       status,
     });
     await transaction.save();
-    if (status !== "successful") {
-      return res.status(400).json({
-        message: "Airtime purchase not successful",
-        data: transaction,
-      });
-    }
 
     user.balance -= amount;
     user.save();
