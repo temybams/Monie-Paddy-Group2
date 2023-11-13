@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { OptionSide, TransactionSide, MoneyDetail } from "./Dashboard.style";
 import Balance from "./Balance";
 import Funding from "./FundMoney";
+import CreatePin from "../../components/shared/modal/TransactionPin";
 import SuccessModal from "../../components/shared/modal/successPage";
 import Mastercard from "/mastercard.png";
 import { CardDetails, UserDetails, Wrapper, Text } from "./CardDetails.style";
@@ -14,6 +15,7 @@ function Dashboard() {
   const [userBalance, setUserBalance] = useState(0);
   const [userEmail, setUserEmail] = useState("");
   const [username, setUsername] = useState("");
+  const [popModal, setPopModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [successTitle, setSuccessTitle] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -55,6 +57,7 @@ function Dashboard() {
 
   return (
     <Layout>
+       <CreatePin display={popModal} dismiss={() => setPopModal(false)} />
       <SuccessModal
         title={successTitle}
         show={showSuccess}
