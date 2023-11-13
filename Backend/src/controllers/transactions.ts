@@ -11,6 +11,8 @@ import Bcrypt from "bcryptjs";
 import { calculateBalance } from "../utils/utils";
 import axios from "axios";
 import { buyAirtimeFromBloc } from "../utils/bloc";
+import { calculateBalance } from "../utils/utils";
+import { buyAirtimeFromBloc } from "../utils/bloc";
 
 const ps_secret = process.env.PAYSTACK_SECRET;
 config();
