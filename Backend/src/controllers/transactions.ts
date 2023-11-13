@@ -1,70 +1,16 @@
-// import { Request, Response } from "express";
-// import Transaction from "../models/transactionmodel";
-// import { airtimeValidation, options } from "../utils/signupValidation";
-// import User from "../models/userModel";
-// import Bcrypt from "bcryptjs";
-
-// export async function buyAirtime(req: Request, res: Response) {
-//   const userId = req.user;
-//   const { error } = airtimeValidation.validate(req.body, options);
-//   if (error)
-//     return res.status(400).json({
-//       message: error.message,
-//     });
-
-//   const user = await User.findById(userId);
-//   if (!user)
-//     return res.status(404).json({
-//       message: "User not found",
-//     });
-//   const { amount, phoneNumber, network, transactionPin } = req.body;
-//   try {
-//     console.log(user.transactionPin, transactionPin);
-//     if (
-//       user.transactionPin !== transactionPin &&
-//       !Bcrypt.compareSync(transactionPin, user.transactionPin as string)
-//     ) {
-//       return res.status(400).json({
-//         message: "Invalid transaction pin",
-//       });
-//     }
-//     if (user.balance < amount)
-//       return res.status(400).json({
-//         message: "Insufficient balance",
-//       });
-
-//     const transaction = new Transaction({
-//       amount,
-//       phoneNumber,
-//       network,
-//       userId,
-//       transactionType: "airtime",
-//     });
-//     transaction.save();
-//     user.balance -= amount;
-//     user.save();
-//     res.json({
-//       message: "successfully purchased airtime",
-//       data: transaction,
-//     });
-//   } catch (error: any) {
-//     console.log(error);
-//     res.status(500).json({
-//       message: "Internal server error",
-//       error: error.message,
-//     });
-//   }
-// }
-
-
 import { Request, Response } from "express";
-import { config } from 'dotenv';
+import { config } from "dotenv";
 import Transaction from "../models/transactionmodel";
-import { airtimeValidation, options, validBankTransfer } from "../utils/signupValidation";
+import {
+  airtimeValidation,
+  options,
+  validBankTransfer,
+} from "../utils/signupValidation";
 import User from "../models/userModel";
 import Bcrypt from "bcryptjs";
-import { calculateBalance } from '../utils/utils';
-import axios from 'axios';
+import axios from "axios";
+import { calculateBalance } from "../utils/utils";
+import { buyAirtimeFromBloc } from "../utils/bloc";
 
 const ps_secret = process.env.PAYSTACK_SECRET;
 config();
@@ -82,8 +28,11 @@ export async function buyAirtime(req: Request, res: Response) {
       message: "User not found",
     });
   const { amount, phoneNumber, network, transactionPin } = req.body;
+  const amountInKobo = amount * 100;
   try {
-    console.log(user.transactionPin, transactionPin);
+    const userBalance = await calculateBalance(userId);
+    user.balance = userBalance;
+    await user.save();
     if (
       user.transactionPin !== transactionPin &&
       !Bcrypt.compareSync(transactionPin, user.transactionPin as string)
@@ -92,19 +41,42 @@ export async function buyAirtime(req: Request, res: Response) {
         message: "Invalid transaction pin",
       });
     }
-    if (user.balance < amount)
+    if (user.balance < amountInKobo)
       return res.status(400).json({
         message: "Insufficient balance",
       });
 
+    //call the airtime api (blochq)
+    const response = await buyAirtimeFromBloc(
+      amountInKobo,
+      phoneNumber,
+      network
+    );
+
+    if (!response.success) {
+      return res.status(400).json(response);
+    }
+
+    const { status, reference } = response.data;
+
     const transaction = new Transaction({
-      amount,
+      amount: amountInKobo,
       phoneNumber,
       network,
       userId,
       transactionType: "airtime",
+      credit: false,
+      reference,
+      status,
     });
-    transaction.save();
+    await transaction.save();
+    if (status !== "successful") {
+      return res.status(400).json({
+        message: "Airtime purchase successful",
+        data: transaction,
+      });
+    }
+
     user.balance -= amount;
     user.save();
     res.json({
@@ -123,8 +95,8 @@ export async function getBalance(req: Request, res: Response) {
   try {
     if (!req.user) {
       return res.status(401).json({
-        message: 'No token found',
-        error: 'Unauthorised',
+        message: "No token found",
+        error: "Unauthorised",
       });
     }
     const userId = req.user;
@@ -132,33 +104,31 @@ export async function getBalance(req: Request, res: Response) {
     const balance = await calculateBalance(userId);
 
     return res.json({
-      message: 'User balance',
+      message: "User balance",
       data: balance,
     });
   } catch (error: any) {
-    console.error('Error calculating balance:', error);
+    console.error("Error calculating balance:", error);
     res
       .status(500)
-      .json({ message: 'Error calculating balance', error: error.message });
+      .json({ message: "Error calculating balance", error: error.message });
   }
 }
-
-
 
 export async function fundAccount(req: Request, res: Response) {
   try {
     if (!req.user) {
       return res.status(401).json({
-        message: 'No token provided',
-        error: "Unauthorised"
+        message: "No token provided",
+        error: "Unauthorised",
       });
     }
     const user = await User.findById(req.user);
 
     if (!user) {
       return res.status(404).json({
-        message: 'Cannot process transaction',
-        error: 'User not found',
+        message: "Cannot process transaction",
+        error: "User not found",
       });
     }
 
@@ -168,8 +138,8 @@ export async function fundAccount(req: Request, res: Response) {
     const processedFund = await Transaction.findOne({ reference });
     if (processedFund) {
       return res.status(409).json({
-        message: 'Stale transaction',
-        error: 'This transaction has been processed already',
+        message: "Stale transaction",
+        error: "This transaction has been processed already",
       });
     }
     axios
@@ -184,15 +154,15 @@ export async function fundAccount(req: Request, res: Response) {
           const funds = new Transaction({
             amount: creditAmount,
             reference,
-            bankName: 'Decagon',
-            accountName: 'Monie-Paddy',
+            bankName: "Decagon",
+            accountName: "Monie-Paddy",
             credit: true,
             userId: req.user,
-            transactionType: 'fund wallet',
+            transactionType: "fund wallet",
           });
           funds.save();
           return res.json({
-            message: 'Success',
+            message: "Success",
             data: creditAmount,
           });
         }
@@ -200,12 +170,12 @@ export async function fundAccount(req: Request, res: Response) {
       .catch((error) => {
         console.error(`Error funding ${user.email} wallet:`, error.message);
         return res.status(500).json({
-          message: 'Transaction failed',
-          error: 'Could not confirm transaction',
+          message: "Transaction failed",
+          error: "Could not confirm transaction",
         });
       });
   } catch (err: any) {
-    console.error('Internal server error: ', err.message);
+    console.error("Internal server error: ", err.message);
     return res.status(500).json({
       message: err.message,
       error: err,
@@ -213,13 +183,12 @@ export async function fundAccount(req: Request, res: Response) {
   }
 }
 
-
 export async function bankTransfer(req: Request, res: Response) {
   try {
     if (!req.user) {
       return res.status(401).json({
-        message: 'No token provided',
-        error: 'Unauthorised',
+        message: "No token provided",
+        error: "Unauthorised",
       });
     }
 
@@ -227,15 +196,15 @@ export async function bankTransfer(req: Request, res: Response) {
 
     if (!user) {
       return res.status(404).json({
-        message: 'Cannot process transaction',
-        error: 'User not found',
+        message: "Cannot process transaction",
+        error: "User not found",
       });
     }
 
     const { error } = validBankTransfer.validate(req.body);
     if (error) {
       return res.status(400).json({
-        message: 'Transaction failed',
+        message: "Transaction failed",
         error: error.message,
       });
     }
@@ -243,15 +212,15 @@ export async function bankTransfer(req: Request, res: Response) {
       req.body;
     if (!user.transactionPin) {
       return res.status(403).json({
-        message: 'Transaction failed',
-        error: 'Invalid credentials',
+        message: "Transaction failed",
+        error: "Invalid credentials",
       });
     }
     const validPin = Bcrypt.compareSync(pin, user.transactionPin);
     if (!validPin) {
       return res.status(403).json({
-        message: 'Transaction failed',
-        error: 'Invalid credentials',
+        message: "Transaction failed",
+        error: "Invalid credentials",
       });
     }
 
@@ -259,8 +228,8 @@ export async function bankTransfer(req: Request, res: Response) {
 
     if (balance < amount) {
       return res.status(409).json({
-        message: 'Transaction failed',
-        error: 'Insufficient funds',
+        message: "Transaction failed",
+        error: "Insufficient funds",
       });
     }
 
@@ -270,24 +239,23 @@ export async function bankTransfer(req: Request, res: Response) {
       accountName,
       accountNumber,
       bankName,
-      transactionType: 'transfer',
+      transactionType: "transfer",
       credit: false,
       note,
     });
 
     return res.json({
-      message: 'Transfer successful',
+      message: "Transfer successful",
       data: transfer,
     });
   } catch (err: any) {
-    console.error('Internal server error: ', err.message);
+    console.error("Internal server error: ", err.message);
     return res.status(500).json({
-      message: 'Internal server error',
+      message: "Internal server error",
       error: err.message,
     });
   }
 }
-
 
 // export async function sendMoney(req: Request, res: Response) {
 //   const senderId = req.user;

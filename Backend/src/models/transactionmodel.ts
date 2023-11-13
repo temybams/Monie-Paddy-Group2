@@ -1,3 +1,4 @@
+import { boolean } from "joi";
 import mongoose, { Document, Model, Schema } from "mongoose";
 
 export interface TransactionInstance extends Document {
@@ -12,6 +13,7 @@ export interface TransactionInstance extends Document {
   accountName: string;
   phoneNumber: string;
   network: string;
+  status: string;
   dataPlan: string;
   electricityMeterNo: string;
 }
@@ -24,6 +26,7 @@ const TransactionSchema = new Schema<TransactionInstance>(
     note: { type: String, required: false },
     credit: { type: Boolean, required: true },
     reference: { type: String },
+    status: { type: String },
     bankName: { type: String },
     accountNumber: { type: String },
     accountName: { type: String },

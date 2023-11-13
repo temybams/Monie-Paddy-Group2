@@ -160,30 +160,29 @@ export async function googleSignOn(req: Request, res: Response) {
   }
 }
 
-
 export async function dashboard(req: Request, res: Response) {
   try {
     if (!req.user) {
       return res.status(401).json({
-        message: 'Unauthorized',
-        error: 'No token provided',
+        message: "Unauthorized",
+        error: "No token provided",
       });
     }
     const user = await User.findById(req.user);
     if (!user) {
       return res.status(404).json({
-        message: 'User not found',
-        error: 'User not found',
+        message: "User not found",
+        error: "User not found",
       });
     }
     return res.json({
-      message: 'User dashboard',
+      message: "User dashboard",
       data: user,
       setPin: user.transactionPinSet,
     });
   } catch (err: any) {
     res.status(500).json({
-      message: 'Internal server error',
+      message: "Internal server error",
       error: err.message,
     });
   }
