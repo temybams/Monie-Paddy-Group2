@@ -95,7 +95,10 @@ export async function login(req: Request, res: Response) {
 
 export async function createPin(req: Request, res: Response) {
   try {
-    const { id } = req.params;
+    const id = req.user;
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
     let { transactionPin, pinConfirmation } = req.body;
 
     transactionPin = transactionPin.toString();

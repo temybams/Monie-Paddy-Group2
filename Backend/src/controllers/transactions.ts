@@ -17,16 +17,22 @@ config();
 export async function buyAirtime(req: Request, res: Response) {
   const userId = req.user;
   const { error } = airtimeValidation.validate(req.body, options);
-  if (error)
+  if (error) {
+    console.error("form details wrong");
     return res.status(400).json({
-      message: error.message,
+      message: "Bad request",
+      error: error.message,
     });
+  }
 
   const user = await User.findById(userId);
-  if (!user)
+  if (!user) {
+    console.error("user not found");
     return res.status(404).json({
       message: "User not found",
     });
+  }
+
   const { amount, phoneNumber, network, transactionPin } = req.body;
   const amountInKobo = amount * 100;
   try {
@@ -37,14 +43,36 @@ export async function buyAirtime(req: Request, res: Response) {
       user.transactionPin !== transactionPin &&
       !Bcrypt.compareSync(transactionPin, user.transactionPin as string)
     ) {
-      return res.status(400).json({
+      console.error("invalid pin");
+      return res.status(403).json({
         message: "Invalid transaction pin",
       });
     }
-    if (user.balance < amountInKobo)
+    if (user.balance < amountInKobo) {
+      console.error("insufficient funds");
       return res.status(400).json({
-        message: "Insufficient balance",
+        message: "purchase failed",
+        error: "Insufficient balance",
       });
+    }
+
+    const appState = "testing";
+
+    if (appState === "testing") {
+      const dudTransaction = await Transaction.create({
+        amount: amountInKobo,
+        phoneNumber,
+        network,
+        userId,
+        transactionType: "airtime",
+        credit: false,
+      });
+
+      return res.json({
+        message: "Purchase successful",
+        data: dudTransaction,
+      });
+    }
 
     //call the airtime api (blochq)
     const response = await buyAirtimeFromBloc(
@@ -54,11 +82,20 @@ export async function buyAirtime(req: Request, res: Response) {
     );
 
     if (!response.success) {
+      console.error("purchase failed from bloc");
+      console.error(response);
       return res.status(400).json(response);
     }
 
     const { status, reference } = response.data;
 
+    if (status !== "successful") {
+      console.error("Airtime purchase not successful");
+      return res.status(400).json({
+        message: "Airtime purchase not successful",
+        data: reference,
+      });
+    }
     const transaction = new Transaction({
       amount: amountInKobo,
       phoneNumber,
@@ -70,12 +107,6 @@ export async function buyAirtime(req: Request, res: Response) {
       status,
     });
     await transaction.save();
-    if (status !== "successful") {
-      return res.status(400).json({
-        message: "Airtime purchase successful",
-        data: transaction,
-      });
-    }
 
     user.balance -= amount;
     user.save();

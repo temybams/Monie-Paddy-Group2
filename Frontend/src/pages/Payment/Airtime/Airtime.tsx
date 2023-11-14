@@ -40,7 +40,7 @@ export default function Airtime() {
         } else {
           console.error("Did not receive response");
         }
-        console.log("Airtime purchase failed:", err.response.data.message);
+        console.log("Airtime purchase failed:", err);
       });
   };
 
@@ -82,10 +82,10 @@ export default function Airtime() {
                 >
                   <option value="">Select network</option>
 
-                  <option value="1">Mtn</option>
-                  <option value="2">Airtel</option>
-                  <option value="3">Glo</option>
-                  <option value="4">9mobile</option>
+                  <option value="mtn">Mtn</option>
+                  <option value="airtel">Airtel</option>
+                  <option value="glo">Glo</option>
+                  <option value="9mobile">9mobile</option>
                 </select>
               </div>
               <div className="mb-3">

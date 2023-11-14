@@ -254,7 +254,7 @@ function CreatePin({ display, dismiss }: CreatePinProps) {
         return;
       }
       setSubmitting(true);
-      Api.put("/users/create-pin", formData)
+      Api.put("/auth/createPin", formData)
         .then(() => {
           setFeedback("Pin created successfully");
           setSubmitting(false);
