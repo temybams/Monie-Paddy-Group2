@@ -10,7 +10,6 @@ import Mastercard from "/mastercard.png";
 import { CardDetails, UserDetails, Wrapper, Text } from "./CardDetails.style";
 import FrequentTransfers from "./FrequentTransactions.style";
 import Referrals from "./Referral.style";
-import CreatePin from "../../components/shared/modal/TransactionPin";
 
 function Dashboard() {
   const [userBalance, setUserBalance] = useState(0);
@@ -60,7 +59,7 @@ function Dashboard() {
 
   return (
     <Layout>
-       <CreatePin display={popModal} dismiss={() => setPopModal(false)} />
+      <CreatePin display={popModal} dismiss={() => setPopModal(false)} />
       <SuccessModal
         title={successTitle}
         show={showSuccess}
