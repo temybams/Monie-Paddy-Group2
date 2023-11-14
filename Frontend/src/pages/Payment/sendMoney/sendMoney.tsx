@@ -13,10 +13,12 @@ import {
 import Layout from "../../../components/newLayout/Layout";
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import Select, { SingleValue } from "react-select";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Api from "../../../api.config";
 import Wallet from "/Wallet.png";
-import Funding from "../../dashboard/FundMoney";
+import SuccessModal from "../../../components/shared/modal/successPage";
+// import Funding from "../../dashboard/FundMoney";
 
 interface BankEntry {
   active: boolean;
@@ -60,6 +62,11 @@ function SendMoney() {
   const [amount, setAmount] = useState("");
   const [note, writeNote] = useState("");
   const [pin, setPin] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [successTitle, setSuccessTitle] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+
+  const navigate = useNavigate();
 
   function handleSelectBank(newValue: SingleValue<BankData>) {
     if (newValue) selectBank(newValue);
@@ -125,6 +132,9 @@ function SendMoney() {
       };
       Api.post("/transactions/sendMoney", transferDetails)
         .then(() => {
+          setSuccessTitle("Transfer Succesful");
+          setSuccessMsg(`${amount} sent to ${accountHolder}`);
+          setSuccess(true);
           selectBank({
             value: "",
             label: "Select a bank",
@@ -196,6 +206,13 @@ function SendMoney() {
   }, []);
   return (
     <Layout activeNav="payment">
+      <SuccessModal
+        show={success}
+        title={successTitle}
+        message={successMsg}
+        handleClose={() => setSuccess(false)}
+        id="successModal"
+      />
       <div style={{ padding: "40px 0" }}>
         <FormWrapper show={step === 1}>
           <Top>
@@ -295,10 +312,10 @@ function SendMoney() {
           <p style={{ color: "red" }}>{feedback1}</p>
         </FormWrapper>
         <div className="container-fluid">
-          <Funding
+          {/* <Funding
             userEmail="test@gmail.com"
             success={() => console.log("success")}
-          />
+          /> */}
         </div>
       </div>
     </Layout>
