@@ -18,7 +18,7 @@ export const SignupSide = styled.div`
 `;
 
 export const FounderSide = styled.div`
-  background-color: #e3f1fe;
+  background: #00AFB9;
 
   @media (min-width: 768px) {
     min-height: 100vh;
@@ -136,5 +136,17 @@ export const ExtLink = styled.a`
   color: var(--Pri-Color);
 `;
 
-export const roundedRectangle = styled.svg`
-`
+export const StyledImage = styled.img`
+  /* Add your styling properties for the image here */
+  width: 100%;
+  height: 72%;
+  background-color: #e3f1fe;
+`;
+
+export const Text = styled.h1`
+  font-family: "Holtwood One SC";
+  color: #fff;
+  font-size: 19px;
+  font-weight: 250;
+  padding: 45px 25px;
+`;

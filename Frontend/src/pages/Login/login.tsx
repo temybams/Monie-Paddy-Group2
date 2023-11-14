@@ -14,10 +14,13 @@ import {
   Label,
   SubmitForm,
   ExtLink,
+  StyledImage,
+  Text,
 } from "./Login.style";
 import googleLogo from "/google-logo.svg";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Rectangleii from "/Rectangle.jpg";
 import axios from "axios";
 import Api from "../../api.config";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -163,7 +166,13 @@ function LoginPage() {
           </div>
         </SignupSide>
         <FounderSide className="col col-12 col-lg-7">
-          <p>Founder message here</p>
+        <Text>
+            It takes 20 years to build a reputation and five minutes to ruin it.
+            If you think about that, you’ll do things differently.
+          </Text>
+          <strong className="py-7 px-4"> - Boluwatife</strong>
+          <p className="p-4"> Founder, Pay-buddy</p>
+          <StyledImage src={Rectangleii} alt="Description" />
         </FounderSide>
       </div>
     </Wrapper>
