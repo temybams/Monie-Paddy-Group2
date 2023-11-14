@@ -14,8 +14,11 @@ import {
   Label,
   SubmitForm,
   ExtLink,
+  Text,
+  StyledImage,
 } from "./Signup.style";
 import googleLogo from "/google-logo.svg";
+import Rectangle from "/Rectangleii.jpg";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -224,7 +227,18 @@ function Signup() {
           </div>
         </SignupSide>
         <FounderSide className="col col-12 col-lg-7">
-          <p>Founder message here</p>
+          <Text>
+            It takes 20 years to build a reputation and five minutes to ruin it.
+            If you think about that, you’ll do things differently.
+          </Text>
+          <strong className="py-7 px-4" style={{ color: "white" }}>
+            {" "}
+            - Boluwatife
+          </strong>
+          <p className="p-4" style={{ color: "white" }}>
+            Founder, Pay-buddy
+          </p>
+          <StyledImage src={Rectangle} alt="Description" />
         </FounderSide>
       </div>
     </Wrapper>
