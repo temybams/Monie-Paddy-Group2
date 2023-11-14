@@ -9,6 +9,7 @@ import Mastercard from "/mastercard.png";
 import { CardDetails, UserDetails, Wrapper, Text } from "./CardDetails.style";
 import FrequentTransfers from "./FrequentTransactions.style";
 import Referrals from "./Referral.style";
+import CreatePin from "../../components/shared/modal/TransactionPin";
 
 function Dashboard() {
   const [userBalance, setUserBalance] = useState(0);
@@ -18,6 +19,7 @@ function Dashboard() {
   const [successTitle, setSuccessTitle] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [newFund, setNewFund] = useState(false);
+  const [createPin, setCreatePin] = useState(false);
 
   function fundSuccess() {
     setSuccessTitle(`Congratulations ${username}`);
@@ -29,9 +31,10 @@ function Dashboard() {
   useEffect(() => {
     Api.get("/dashboard")
       .then((res) => {
-        const { email, fullName } = res.data.data;
+        const { email, fullName, transactionPinSet } = res.data.data;
         setUsername(fullName);
         setUserEmail(email);
+        setCreatePin(!transactionPinSet);
       })
       .catch((err) => {
         if (err.response) {
@@ -62,6 +65,7 @@ function Dashboard() {
         id="successModal"
         handleClose={() => setShowSuccess(false)}
       />
+      <CreatePin display={createPin} dismiss={() => setCreatePin(false)} />
       <div className="row m-0 p-0" style={{ width: "100%", padding: "0" }}>
         <OptionSide className="col-12 col-lg-8 m-0 p-0">
           <MoneyDetail>

@@ -20,7 +20,8 @@ export async function buyAirtime(req: Request, res: Response) {
   if (error) {
     console.error("form details wrong");
     return res.status(400).json({
-      message: error.message,
+      message: "Bad request",
+      error: error.message,
     });
   }
 
@@ -43,14 +44,33 @@ export async function buyAirtime(req: Request, res: Response) {
       !Bcrypt.compareSync(transactionPin, user.transactionPin as string)
     ) {
       console.error("invalid pin");
-      return res.status(400).json({
+      return res.status(403).json({
         message: "Invalid transaction pin",
       });
     }
     if (user.balance < amountInKobo) {
       console.error("insufficient funds");
       return res.status(400).json({
-        message: "Insufficient balance",
+        message: "purchase failed",
+        error: "Insufficient balance",
+      });
+    }
+
+    const appState = "testing";
+
+    if (appState === "testing") {
+      const dudTransaction = await Transaction.create({
+        amount: amountInKobo,
+        phoneNumber,
+        network,
+        userId,
+        transactionType: "airtime",
+        credit: false,
+      });
+
+      return res.json({
+        message: "Purchase successful",
+        data: dudTransaction,
       });
     }
 

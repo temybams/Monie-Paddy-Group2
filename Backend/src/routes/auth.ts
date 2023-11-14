@@ -1,6 +1,7 @@
 import express from "express";
 import * as user from "../controllers/userController";
 import passport from "passport";
+import { auth } from "../middleware/auth";
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ const router = express.Router();
 
 router.post("/login", user.login);
 router.post("/signup", user.signup);
-router.put("/createPin/:id", user.createPin);
+router.put("/createPin", auth, user.createPin);
 
 router.get(
   "/google",
