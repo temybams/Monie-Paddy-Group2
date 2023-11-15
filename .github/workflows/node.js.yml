@@ -28,7 +28,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: cd Backend   
-    - run: yarn --ignore-engines --frozen-lockfile
+    - run: yarn --ignore-engines --frozen-lockfile -- lock file /home/runner/work/Monie-Paddy-Group2/Backend
 
 
   build:
