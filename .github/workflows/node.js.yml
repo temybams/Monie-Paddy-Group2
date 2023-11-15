@@ -29,7 +29,7 @@ jobs:
 
     - name: use Node.js
       working-directory: Backend
-      run: npm ci
+      run: yarn --ignore-engines --frozen-lockfile
     - run: yarn --ignore-engines --frozen-lockfile 
 
 
