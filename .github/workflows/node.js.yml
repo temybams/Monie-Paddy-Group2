@@ -21,14 +21,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - run: cd Backend
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: cd Backend   
-    - run: yarn --ignore-engines --frozen-lockfile -- lock file /home/runner/work/Monie-Paddy-Group2/Backend
+        cache: 'npm'   
+    - run: yarn --ignore-engines --frozen-lockfile 
 
 
   build:
