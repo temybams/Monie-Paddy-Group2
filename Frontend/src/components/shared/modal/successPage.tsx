@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 import successImage1 from '/assets/sucessImage1.png';
 
 interface SuccessModalProps {
@@ -142,6 +143,12 @@ const ModalButton = styled.button`
 `;
 
 const SuccessModal: FC<SuccessModalProps> = ({ show, handleClose, title, message, id }) => {
+  const navigate = useNavigate(); 
+
+  const handleContinue = () => {
+    handleClose(); // Close the modal
+    navigate('/dashboard'); // Navigate to the dashboard
+  };
   return (
     <Modal show={show} tabIndex={-1} id={String(id)}>
       <ModalDialog>
@@ -160,7 +167,7 @@ const SuccessModal: FC<SuccessModalProps> = ({ show, handleClose, title, message
           <ModalBody>
             <ModalTitle>{title}</ModalTitle>
             <p>{message}</p>
-            <ModalButton onClick={handleClose}>
+            <ModalButton onClick={handleContinue}>
               Continue
             </ModalButton>
           </ModalBody>
