@@ -10,6 +10,7 @@ import Mastercard from "/mastercard.png";
 import { CardDetails, UserDetails, Wrapper, Text } from "./CardDetails.style";
 import FrequentTransfers from "./FrequentTransactions.style";
 import Referrals from "./Referral.style";
+import ListTransactions from "./aside";
 
 function Dashboard() {
   const [userBalance, setUserBalance] = useState(0);
@@ -101,7 +102,7 @@ function Dashboard() {
           </Wrapper>
         </OptionSide>
         <TransactionSide className="col-12 col-lg-4">
-          <h1>Hello world</h1>
+        <ListTransactions refresh={newFund} />
         </TransactionSide>
       </div>
     </Layout>
