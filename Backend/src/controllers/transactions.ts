@@ -287,6 +287,53 @@ export async function bankTransfer(req: Request, res: Response) {
     });
   }
 }
+export async function getTransactions(req: Request, res: Response) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        message: "No token provided",
+        error: "Unauthorised",
+      });
+    }
+    const { search, filter } = req.query;
+    let query: any = { userId: req.user}
+    if (search) {
+      query.$or = [
+        {transactionType: {$regex: search as string, $options: 'i'}},
+        { accountName: { $regex: search as string, $options: 'i' } },
+        { accountNumber: { $regex: search as string, $options: 'i' } },
+        { bankName: { $regex: search as string, $options: 'i' } },
+        { phoneNumber: { $regex: search as string, $options: 'i' } },
+        { network: { $regex: search as string, $options: 'i' } },
+        { dataPlan: { $regex: search as string, $options: 'i' } },
+        { electricityMeterNo: { $regex: search as string, $options: 'i' } },
+        { note: { $regex: search as string, $options: 'i' } },
+      ];
+    }
+    if (filter === "sucessfully" || filter === "failed") {
+      query.status = filter;
+    }
+    if (filter === "true" || filter === "false") {
+      query.credit = filter;
+    }
+    if ( filter === "all") {
+      query = {}
+    }
+    // console.log('Query:', query);
+    const transactions = await Transaction.find(query);
+    console.log('Transactions:', transactions);
+    return res.json({
+      message: "Transactions",
+      data: transactions,
+    });
+  }catch (err: any) {
+    console.error("Internal server error: ", err.message);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+}
 
 // export async function sendMoney(req: Request, res: Response) {
 //   const senderId = req.user;
