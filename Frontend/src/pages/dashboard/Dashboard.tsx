@@ -86,7 +86,7 @@ function Dashboard() {
                 className="mt-4 mx-4"
                 style={{ width: "40px", height: "24px" }}
               />
-              <UserDetails>GIFT Renee</UserDetails>
+              <UserDetails>{username}</UserDetails>
               <CardDetails>***6580</CardDetails>
             </div>
           </MoneyDetail>
