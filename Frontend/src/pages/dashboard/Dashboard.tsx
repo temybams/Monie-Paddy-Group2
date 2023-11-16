@@ -100,7 +100,9 @@ function Dashboard() {
             <Referrals />
           </Wrapper>
         </OptionSide>
-        <TransactionSide className="col-12 col-lg-4"></TransactionSide>
+        <TransactionSide className="col-12 col-lg-4">
+          <h1>Hello world</h1>
+        </TransactionSide>
       </div>
     </Layout>
   );
