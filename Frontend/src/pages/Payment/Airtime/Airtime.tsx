@@ -4,6 +4,7 @@ import Topbar from "../../../components/shared/topbar/Topbar";
 import Sidebar from "../../../components/shared/sidebar/Sidebar";
 import "./Airtime.css";
 import phone from "../assets/Vector.png";
+import SuccessModal from "../../../components/shared/modal/successPage";
 
 export default function Airtime() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,11 @@ export default function Airtime() {
     phoneNumber: "",
     transactionPin: "",
   });
+  const [success, setSuccess] = useState(false);
+  const [successTitle, setSuccessTitle] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [error, setError] = useState("");
+  
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -32,13 +38,18 @@ export default function Airtime() {
           phoneNumber: "",
           transactionPin: "",
         });
+        setSuccessTitle("Your airtime purchase was succesful");
+          setSuccessMsg(`Your airtime purchase of N${formData.amount} has been sent to ${formData.phoneNumber}`);
+          setSuccess(true);
       })
       .catch((err) => {
         if (err.response) {
           const errorCode = err.response.status;
           console.error(`Problem occured received status: ${errorCode}`);
+          setError(`Airtime purchase failed: ${err.response.data.message}`);
         } else {
           console.error("Did not receive response");
+          setError("Airtime purchase failed: Unable to connect to the server");
         }
         console.log("Airtime purchase failed:", err);
       });
@@ -46,6 +57,13 @@ export default function Airtime() {
 
   return (
     <div className="container-fluid">
+      <SuccessModal
+        show={success}
+        title={successTitle}
+        message={successMsg}
+        handleClose={() => setSuccess(false)}
+        id="successModal"
+      />
       <Topbar />
 
       <div className="row ">
@@ -133,7 +151,11 @@ export default function Airtime() {
                   placeholder="Enter your transaction pin"
                 />
               </div>
-
+              {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
               <button type="submit" className="btn p-3">
                 Proceed
               </button>
