@@ -43,7 +43,7 @@ export default function payment() {
               </div>
               <div className="col">
                 <div className="bg-white mr-3 p-3">
-                  <Link to="/send-money" className="text-decoration-none">
+                  <Link to="/buy-data" className="text-decoration-none">
                     <Card
                       header="Buy Data"
                       image={Connection}

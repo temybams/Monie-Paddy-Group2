@@ -8,6 +8,7 @@ import Payment from "./pages/Payment/payment";
 import Airtime from "./pages/Payment/Airtime/Airtime";
 import Dashboard from "./pages/dashboard/Dashboard";
 import CreatePin from "./components/shared/modal/TransactionPin";
+import DataPurchase from "./pages/Payment/buyData/buyData";
 function App() {
   return (
     <BrowserRouter>
@@ -18,6 +19,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/sso" element={<Sso />} />
         <Route path="/send-money" element={<SendMoney />} />
+        <Route path="/buy-data" element={<DataPurchase/>}/>
         <Route path="/payments" element={<Payment />} />
         <Route path="/airtime" element={<Airtime />} />
         <Route
