@@ -1,0 +1,19 @@
+.main-page {
+background: var(--Primary-50, #E3F1FF);
+overflow: auto;
+  }
+
+.custom-margin {
+  margin-right: 0;
+}
+
+
+.transactions-bar {
+   margin-left: 65%;
+
+}
+
+.transaction-col {
+    background-color: #BCDCFF;
+}
+

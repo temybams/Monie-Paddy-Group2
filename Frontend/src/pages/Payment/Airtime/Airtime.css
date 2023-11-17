@@ -1,0 +1,23 @@
+.main{
+    background-color: #e3f1ff;
+}
+.form-label{
+    color: black;
+}
+ form .btn{
+    background-color: #00AFB9;
+    color: white;
+}
+form .btn:hover{
+    background-color: #00AFB9;
+    color: white;
+}
+.img{
+    width:fit-content;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background-color: #E8F1FD;
+}
+.custom-form{
+    height: 100px;
+}
