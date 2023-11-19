@@ -10,7 +10,7 @@ import Mastercard from "/mastercard.png";
 import { CardDetails, UserDetails, Wrapper, Text } from "./CardDetails.style";
 import FrequentTransfers from "./FrequentTransactions.style";
 import Referrals from "./Referral.style";
-import ListTransactions from "./aside";
+import ListTransactions from "./Aside";
 
 function Dashboard() {
   const [userBalance, setUserBalance] = useState(0);

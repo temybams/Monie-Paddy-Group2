@@ -10,7 +10,7 @@ import {
   FilterOption,
 } from "./Aside.style";
 import { IoFilterSharp, IoSearchOutline } from "react-icons/io5";
-import TransactionList from "./transactionsList";
+import TransactionList from "./TransactionsList";
 import Api from "../../api.config";
 
 const filterOptions = ["newest", "oldest", "credit", "debit"];
