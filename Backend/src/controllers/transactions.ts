@@ -9,11 +9,20 @@ import {
 import User from "../models/userModel";
 import Bcrypt from "bcryptjs";
 import axios from "axios";
-import { calculateBalance } from "../utils/utils";
-import { buyAirtimeFromBloc } from "../utils/bloc";
+import { TELCOS, calculateBalance } from "../utils/utils";
+import {
+  buyAirtimeFromBloc,
+  NetworkItem,
+  DataPlan,
+  PlanReturn,
+  fetchDataPlan,
+  buyDataFromBloc,
+} from "../utils/bloc";
 
-const ps_secret = process.env.PAYSTACK_SECRET;
 config();
+const ps_secret = process.env.PAYSTACK_SECRET;
+const bloc_secret = process.env.BLOCHQ_TOKEN;
+
 export async function buyAirtime(req: Request, res: Response) {
   const userId = req.user;
   const { error } = airtimeValidation.validate(req.body, options);
@@ -296,18 +305,18 @@ export async function getTransactions(req: Request, res: Response) {
       });
     }
     const { search, filter } = req.query;
-    let query: any = { userId: req.user}
+    let query: any = { userId: req.user };
     if (search) {
       query.$or = [
-        {transactionType: {$regex: search as string, $options: 'i'}},
-        { accountName: { $regex: search as string, $options: 'i' } },
-        { accountNumber: { $regex: search as string, $options: 'i' } },
-        { bankName: { $regex: search as string, $options: 'i' } },
-        { phoneNumber: { $regex: search as string, $options: 'i' } },
-        { network: { $regex: search as string, $options: 'i' } },
-        { dataPlan: { $regex: search as string, $options: 'i' } },
-        { electricityMeterNo: { $regex: search as string, $options: 'i' } },
-        { note: { $regex: search as string, $options: 'i' } },
+        { transactionType: { $regex: search as string, $options: "i" } },
+        { accountName: { $regex: search as string, $options: "i" } },
+        { accountNumber: { $regex: search as string, $options: "i" } },
+        { bankName: { $regex: search as string, $options: "i" } },
+        { phoneNumber: { $regex: search as string, $options: "i" } },
+        { network: { $regex: search as string, $options: "i" } },
+        { dataPlan: { $regex: search as string, $options: "i" } },
+        { electricityMeterNo: { $regex: search as string, $options: "i" } },
+        { note: { $regex: search as string, $options: "i" } },
       ];
     }
     if (filter === "sucessfully" || filter === "failed") {
@@ -316,17 +325,17 @@ export async function getTransactions(req: Request, res: Response) {
     if (filter === "true" || filter === "false") {
       query.credit = filter;
     }
-    if ( filter === "all") {
-      query = {}
+    if (filter === "all") {
+      query = {};
     }
     // console.log('Query:', query);
     const transactions = await Transaction.find(query);
-    console.log('Transactions:', transactions);
+    console.log("Transactions:", transactions);
     return res.json({
       message: "Transactions",
       data: transactions,
     });
-  }catch (err: any) {
+  } catch (err: any) {
     console.error("Internal server error: ", err.message);
     return res.status(500).json({
       message: "Internal server error",
@@ -335,72 +344,223 @@ export async function getTransactions(req: Request, res: Response) {
   }
 }
 
-// export async function sendMoney(req: Request, res: Response) {
-//   const senderId = req.user;
+export async function getNetwork(req: Request, res: Response) {
+  try {
+    const Authorization = `Bearer ${bloc_secret}`;
+    axios
+      .get("https://api.blochq.io/v1/bills/operators?bill=telco", {
+        headers: {
+          Authorization,
+        },
+      })
+      .then((response) => {
+        const { success } = response.data;
+        if (success) {
+          const summary = response.data.data.map((item: NetworkItem) => ({
+            name: item.name,
+            id: item.id,
+          }));
+          return res.json({
+            message: "Networks",
+            data: summary,
+          });
+        } else {
+          return res.status(502).json({
+            message: "Networks unavailable",
+            error: "Could not fetch networks",
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        return res.status(502).json({
+          message: "Networks unavailable",
+          error: "Could not fetch networks",
+        });
+      });
+  } catch (err: any) {
+    console.error("Internal server error: ", err.message);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+}
 
-//   const sender = await User.findById(senderId);
+export async function getDataPlans(req: Request, res: Response) {
+  try {
+    const network = req.query.network as string;
+    const id = TELCOS.find(
+      (telco) => telco.name.toLowerCase() === network.toLowerCase()
+    )?.id;
+    console.log(id);
+    if (!id) {
+      return res.status(400).json({
+        message: "Bad request",
+        error: "Network id not provided",
+      });
+    }
 
-//   if (!sender) {
-//     return res.status(404).json({
-//       message: 'Sender not found',
-//     });
-//   }
+    const Authorization = `Bearer ${bloc_secret}`;
 
-//   const {
-//     amount,
-//     receiverUserId,
-//     note,
-//     transactionPin,
+    axios
+      .get(
+        `https://api.blochq.io/v1/bills/operators/${id}/products?bill=telco`,
+        {
+          headers: {
+            Authorization,
+          },
+        }
+      )
+      .then((response) => {
+        const { success } = response.data;
+        if (success) {
+          const plans: PlanReturn[] = [];
+          response.data.data.forEach((item: DataPlan) => {
+            if (item.fee_type === "FIXED") {
+              const formatFee = item.meta.fee.split(".")[0];
+              item.meta.fee = formatFee;
+              plans.push({ id: item.id, meta: item.meta });
+            }
+          });
+          return res.json({
+            message: "Data Plans",
+            data: plans,
+          });
+        } else {
+          return res.status(502).json({
+            message: "Data Plans unavailable",
+            error: "Could not fetch data plans",
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        return res.status(502).json({
+          message: "Data Plans unavailable",
+          error: "Could not fetch data plans",
+        });
+      });
+  } catch (err: any) {
+    console.error("Internal server error: ", err.message);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+}
 
-//   } = req.body;
+export async function buyDataPlans(req: Request, res: Response) {
+  const userId = req.user;
 
-//   try {
-//     const userTransactionPin = sender.transactionPin;
-//     if (!transactionPin || !userTransactionPin || !Bcrypt.compareSync(transactionPin, userTransactionPin)) {
-//       return res.status(400).json({
-//         message: 'Invalid transaction pin',
-//       });
-//     }
+  const user = await User.findById(userId);
+  if (!user) {
+    console.error("user not found");
+    return res.status(404).json({
+      message: "User not found",
+    });
+  }
 
-//     if (sender.balance < amount) {
-//       return res.status(400).json({
-//         message: 'Insufficient balance',
-//       });
-//     }
+  const { dataPlanId, phoneNumber, network, transactionPin } = req.body;
+  const dataPlan = await fetchDataPlan(network, dataPlanId);
+  console.log(dataPlan);
 
-//     const receiver = await User.findById(receiverUserId);
+  if (!dataPlan) {
+    console.error(`Error getting plan ${dataPlan.error}`);
+    return res.status(502).json({
+      message: `Error getting plan`,
+    });
+  }
 
-//     if (!receiver) {
-//       return res.status(404).json({
-//         message: 'Receiver not found',
-//       });
-//     }
+  if (dataPlan.error) {
+    console.error(`Error getting plan ${dataPlan.error}`);
+    return res.status(502).json({
+      message: `Error getting plan`,
+    });
+  }
 
-//     const transaction = new Transaction({
-//       amount,
-//       userId: senderId,
-//       receiver,
-//       note,
-//       transactionType: 'send-money',
-//     });
-//     await transaction.save();
+  const amount = Number(dataPlan.meta.fee);
+  const amountInKobo = amount * 100;
+  try {
+    const userBalance = await calculateBalance(userId);
+    user.balance = userBalance;
+    await user.save();
+    if (
+      user.transactionPin !== transactionPin &&
+      !Bcrypt.compareSync(transactionPin, user.transactionPin as string)
+    ) {
+      console.error("invalid pin");
+      return res.status(403).json({
+        message: "Invalid transaction pin",
+      });
+    }
+    if (user.balance < amountInKobo) {
+      console.error("insufficient funds");
+      return res.status(400).json({
+        message: "purchase failed",
+        error: "Insufficient balance",
+      });
+    }
 
-//     // Update sender's and receiver's balances
-//     sender.balance -= amount;
-//     receiver.balance += amount;
+    const appState = "testing";
 
-//     await sender.save();
-//     await receiver.save();
+    if (appState === "testing") {
+      const dudTransaction = await Transaction.create({
+        amount: amountInKobo,
+        phoneNumber,
+        network,
+        userId,
+        transactionType: "data",
+        credit: false,
+      });
 
-//     res.json({
-//       message: 'Money sent successfully',
-//       data: transaction,
-//     });
-//   } catch (error: any) {
-//     console.log(error);
-//     res.status(500).json({
-//       message: 'Internal server error',
-//       error: error.message,
-//     });
-//   }
-// }
+      return res.json({
+        message: "Purchase successful",
+        data: dudTransaction,
+      });
+    }
+
+    //call the data api (blochq)
+    const response = await buyDataFromBloc(dataPlanId, phoneNumber, network);
+
+    if (!response.success) {
+      console.error("purchase failed from bloc");
+      console.error(response);
+      return res.status(400).json(response);
+    }
+
+    const { status, reference } = response.data;
+
+    if (status !== "successful") {
+      console.error("Airtime purchase not successful");
+      return res.status(400).json({
+        message: "Airtime purchase not successful",
+        data: reference,
+      });
+    }
+    const transaction = new Transaction({
+      amount: amountInKobo,
+      phoneNumber,
+      network,
+      userId,
+      transactionType: "airtime",
+      credit: false,
+      reference,
+      status,
+    });
+    await transaction.save();
+
+    user.balance -= amount;
+    user.save();
+    res.json({
+      message: "successfully purchased airtime",
+      data: transaction,
+    });
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
