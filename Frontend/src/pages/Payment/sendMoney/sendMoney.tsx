@@ -13,12 +13,11 @@ import {
 import Layout from "../../../components/newLayout/Layout";
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import Select, { SingleValue } from "react-select";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Api from "../../../api.config";
 import Wallet from "/Wallet.png";
 import SuccessModal from "../../../components/shared/modal/successPage";
-// import Funding from "../../dashboard/FundMoney";
 
 interface BankEntry {
   active: boolean;
@@ -66,7 +65,7 @@ function SendMoney() {
   const [successTitle, setSuccessTitle] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   function handleSelectBank(newValue: SingleValue<BankData>) {
     if (newValue) selectBank(newValue);
@@ -311,12 +310,7 @@ function SendMoney() {
           </form>
           <p style={{ color: "red" }}>{feedback1}</p>
         </FormWrapper>
-        <div className="container-fluid">
-          {/* <Funding
-            userEmail="test@gmail.com"
-            success={() => console.log("success")}
-          /> */}
-        </div>
+        <div className="container-fluid"></div>
       </div>
     </Layout>
   );
