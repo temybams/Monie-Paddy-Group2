@@ -45,3 +45,34 @@ jobs:
     - name: build backend
       working-directory: Backend
       run: yarn build
+
+  Frontend-install:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: use Node.js
+      working-directory: Frontend
+      run: yarn --ignore-engines --frozen-lockfile
+    - run: yarn --ignore-engines --frozen-lockfile 
+
+
+  Frontend-build:
+
+    runs-on: ubuntu-latest
+    needs: Frontend-install 
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: use Node.js
+      working-directory: Frontend
+      run: yarn --ignore-engines --frozen-lockfile
+    - name: build frontend
+      working-directory: Frontend
+      run: yarn build
