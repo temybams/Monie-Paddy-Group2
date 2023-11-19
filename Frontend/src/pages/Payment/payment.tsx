@@ -3,9 +3,10 @@ import Topbar from "../../components/shared/topbar/Topbar";
 import Sidebar from "../../components/shared/sidebar/Sidebar";
 import Card from "./Card";
 import Phone from "./assets/Vector.png";
-import Wallet from "./assets/wallet.png";
-import Connection from "./assets/connection.png";
+import Wallet from "./assets/Wallet.png";
+import Connection from "./assets/Connection.png";
 import Bolt from "./assets/Bolt.png";
+
 // import "./payment.css"
 
 export default function payment() {
