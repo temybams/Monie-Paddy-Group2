@@ -482,3 +482,109 @@ export async function buyDataPlans(req: Request, res: Response) {
     });
   }
 }
+
+export async function getNetwork(req: Request, res: Response) {
+  try {
+    const Authorization = `Bearer ${bloc_secret}`;
+    axios
+      .get("https://api.blochq.io/v1/bills/operators?bill=telco", {
+        headers: {
+          Authorization,
+        },
+      })
+      .then((response) => {
+        const { success } = response.data;
+        if (success) {
+          const summary = response.data.data.map((item: NetworkItem) => ({
+            name: item.name,
+            id: item.id,
+          }));
+          return res.json({
+            message: "Networks",
+            data: summary,
+          });
+        } else {
+          return res.status(502).json({
+            message: "Networks unavailable",
+            error: "Could not fetch networks",
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        return res.status(502).json({
+          message: "Networks unavailable",
+          error: "Could not fetch networks",
+        });
+      });
+  } catch (err: any) {
+    console.error("Internal server error: ", err.message);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+}
+
+export async function getDataPlans(req: Request, res: Response) {
+  try {
+    const network = req.query.network as string;
+    const id = TELCOS.find(
+      (telco) => telco.name.toLowerCase() === network.toLowerCase()
+    )?.id;
+    console.log(id);
+    if (!id) {
+      return res.status(400).json({
+        message: "Bad request",
+        error: "Network id not provided",
+      });
+    }
+
+    const Authorization = `Bearer ${bloc_secret}`;
+
+    axios
+      .get(
+        `https://api.blochq.io/v1/bills/operators/${id}/products?bill=telco`,
+        {
+          headers: {
+            Authorization,
+          },
+        }
+      )
+      .then((response) => {
+        const { success } = response.data;
+        if (success) {
+          const plans: PlanReturn[] = [];
+          response.data.data.forEach((item: DataPlan) => {
+            if (item.fee_type === "FIXED") {
+              const formatFee = item.meta.fee.split(".")[0];
+              item.meta.fee = formatFee;
+              plans.push({ id: item.id, meta: item.meta });
+            }
+          });
+          return res.json({
+            message: "Data Plans",
+            data: plans,
+          });
+        } else {
+          return res.status(502).json({
+            message: "Data Plans unavailable",
+            error: "Could not fetch data plans",
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        return res.status(502).json({
+          message: "Data Plans unavailable",
+          error: "Could not fetch data plans",
+        });
+      });
+  } catch (err: any) {
+    console.error("Internal server error: ", err.message);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+}
