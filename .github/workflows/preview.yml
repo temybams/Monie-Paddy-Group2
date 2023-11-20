@@ -52,7 +52,7 @@ jobs:
               - name: Pull Vercel Environment Information
                 run: vercel pull --yes --environment=preview --token=TKerx8tTIzbyH0v1eyieUM8n
 
-              - name: Install Project Dependencies
+              - name: Install Project dependencies
                 run: yarn build
 
               - name: Build Project Artifacts
