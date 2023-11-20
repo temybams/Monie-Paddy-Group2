@@ -304,8 +304,6 @@ export async function getTransactions(req: Request, res: Response) {
         error: "Unauthorised",
       });
     }
-    const { search, filter } = req.query;
-    let query: any = { userId: req.user };
     const { search = "", filter = "", page = 1, pageSize = 10 } = req.query;
     let query: any = { userId: req.user };
     if (search) {
@@ -344,8 +342,6 @@ export async function getTransactions(req: Request, res: Response) {
     const skip = (Number(page) - 1) * Number(pageSize);
 
     // console.log('Query:', query);
-    const transactions = await Transaction.find(query);
-    console.log("Transactions:", transactions);
 
     const transactions = await Transaction.find(query)
       .sort({ createdAt: sort })
