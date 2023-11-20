@@ -52,6 +52,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    -name: Install dependencies
+      working-directory: Frontend
+      run: yarn --ignore-engines --frozen-lockfile
+      run: yarn install
     - name: use Node.js
       working-directory: Frontend
       run: yarn --ignore-engines --frozen-lockfile
@@ -82,19 +86,29 @@ jobs:
     needs: [Frontend-build]
 
     env:
-      VERCEL_ORG_ID: d59eQEKtLRnmcMLDwroxOIMX
+      VERCEL_ORG_ID: team_d59eQEKtLRnmcMLDwroxOIMX
       VERCEL_PROJECT_ID: prj_sRIXzhI3Ar7At1QezOw3S8j9oIZW
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Install Vercel CLI
-      run: yarn global add vercel
-    
-    - name: Pull Vercel Environment Information
-      run: vercel pull --yes --environment=production --token=TKerx8tTIzbyH0v1eyieUM8n
+        - uses: actions/checkout@v3
+        - name: Install Vercel CLI
+          run: yarn global add vercel
+              
+        - name: Pull Vercel Environment Information
+          run: vercel pull --yes --environment=production --token=TKerx8tTIzbyH0v1eyieUM8n
 
-    - name: Build Project Artifacts
-      run: vercel build --prod --token=TKerx8tTIzbyH0v1eyieUM8n
+        - name: Install Project dependencies
+          working-directory: Frontend
+          run: yarn build
 
-    - name: Deploy Project Artifacts
-      run: vercel deploy --prebuilt --prod --token=TKerx8tTIzbyH0v1eyieUM8n
+        - name: Pull Project Settings
+          working-directory: Frontend
+          run: vercel pull --yes --environment=production --token=TKerx8tTIzbyH0v1eyieUM8n
+
+        - name: Build Project Artifacts
+          working-directory: Frontend
+          run: vercel build --prod --token=TKerx8tTIzbyH0v1eyieUM8n
+
+        - name: Deploy Project Artifacts
+          working-directory: Frontend
+          run: vercel deploy --prebuilt --prod --token=TKerx8tTIzbyH0v1eyieUM8n

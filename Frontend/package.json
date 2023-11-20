@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "yarn --ignore-engines && tsc && vite build --mode production",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -21,7 +21,8 @@
     "react-query": "^3.39.3",
     "react-router-dom": "^6.18.0",
     "react-select": "^5.8.0",
-    "styled-components": "^6.1.1"
+    "styled-components": "^6.1.1",
+    "vite": "^4.4.5"
   },
   "engines": {
     "node": ">=18"
