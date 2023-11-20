@@ -22,7 +22,7 @@
     "react-router-dom": "^6.18.0",
     "react-select": "^5.8.0",
     "styled-components": "^6.1.1",
-    "vite": "^4.4.9"
+    "vite": "^4.4.5"
   },
   "engines": {
     "node": ">=18"
@@ -41,8 +41,8 @@
     "eslint-plugin-react-refresh": "^0.4.3",
     "lint-staged": ">=10",
     "prettier": "^3.0.3",
-    "typescript": "^5.0.2"
-    
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix"
