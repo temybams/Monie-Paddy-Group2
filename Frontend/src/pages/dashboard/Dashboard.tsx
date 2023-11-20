@@ -10,6 +10,7 @@ import Mastercard from "/mastercard.png";
 import { CardDetails, UserDetails, Wrapper, Text } from "./CardDetails.style";
 import FrequentTransfers from "./FrequentTransactions.style";
 import Referrals from "./Referral.style";
+import ListTransactions from "./Aside";
 
 function Dashboard() {
   const [userBalance, setUserBalance] = useState(0);
@@ -86,7 +87,7 @@ function Dashboard() {
                 className="mt-4 mx-4"
                 style={{ width: "40px", height: "24px" }}
               />
-              <UserDetails>GIFT Renee</UserDetails>
+              <UserDetails>{username}</UserDetails>
               <CardDetails>***6580</CardDetails>
             </div>
           </MoneyDetail>
@@ -100,7 +101,9 @@ function Dashboard() {
             <Referrals />
           </Wrapper>
         </OptionSide>
-        <TransactionSide className="col-12 col-lg-4"></TransactionSide>
+        <TransactionSide className="col-12 col-lg-4">
+        <ListTransactions refresh={newFund} />
+        </TransactionSide>
       </div>
     </Layout>
   );

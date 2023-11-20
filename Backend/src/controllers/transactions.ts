@@ -9,11 +9,20 @@ import {
 import User from "../models/userModel";
 import Bcrypt from "bcryptjs";
 import axios from "axios";
-import { calculateBalance } from "../utils/utils";
-import { buyAirtimeFromBloc } from "../utils/bloc";
+import { TELCOS, calculateBalance } from "../utils/utils";
+import {
+  buyAirtimeFromBloc,
+  NetworkItem,
+  DataPlan,
+  PlanReturn,
+  fetchDataPlan,
+  buyDataFromBloc,
+} from "../utils/bloc";
 
-const ps_secret = process.env.PAYSTACK_SECRET;
 config();
+const ps_secret = process.env.PAYSTACK_SECRET;
+const bloc_secret = process.env.BLOCHQ_TOKEN;
+
 export async function buyAirtime(req: Request, res: Response) {
   const userId = req.user;
   const { error } = airtimeValidation.validate(req.body, options);
@@ -291,36 +300,52 @@ export async function getTransactions(req: Request, res: Response) {
   try {
     if (!req.user) {
       return res.status(401).json({
-        message: 'No token provided',
-        error: 'Unauthorised',
+        message: "No token provided",
+        error: "Unauthorised",
       });
     }
-    const { search = '', filter = '', page = 1, pageSize = 10 } = req.query;
+    const { search, filter } = req.query;
+    let query: any = { userId: req.user };
+    const { search = "", filter = "", page = 1, pageSize = 10 } = req.query;
     let query: any = { userId: req.user };
     if (search) {
       query.$or = [
-        { transactionType: { $regex: search as string, $options: 'i' } },
-        { accountName: { $regex: search as string, $options: 'i' } },
-        { accountNumber: { $regex: search as string, $options: 'i' } },
-        { bankName: { $regex: search as string, $options: 'i' } },
-        { phoneNumber: { $regex: search as string, $options: 'i' } },
-        { network: { $regex: search as string, $options: 'i' } },
-        { dataPlan: { $regex: search as string, $options: 'i' } },
-        { electricityMeterNo: { $regex: search as string, $options: 'i' } },
-        { note: { $regex: search as string, $options: 'i' } },
+        { transactionType: { $regex: search as string, $options: "i" } },
+        { accountName: { $regex: search as string, $options: "i" } },
+        { accountNumber: { $regex: search as string, $options: "i" } },
+        { bankName: { $regex: search as string, $options: "i" } },
+        { phoneNumber: { $regex: search as string, $options: "i" } },
+        { network: { $regex: search as string, $options: "i" } },
+        { dataPlan: { $regex: search as string, $options: "i" } },
+        { electricityMeterNo: { $regex: search as string, $options: "i" } },
+        { note: { $regex: search as string, $options: "i" } },
+        { transactionType: { $regex: search as string, $options: "i" } },
+        { accountName: { $regex: search as string, $options: "i" } },
+        { accountNumber: { $regex: search as string, $options: "i" } },
+        { bankName: { $regex: search as string, $options: "i" } },
+        { phoneNumber: { $regex: search as string, $options: "i" } },
+        { network: { $regex: search as string, $options: "i" } },
+        { dataPlan: { $regex: search as string, $options: "i" } },
+        { electricityMeterNo: { $regex: search as string, $options: "i" } },
+        { note: { $regex: search as string, $options: "i" } },
       ];
     }
-    const sort = filter === 'oldest' ? 1 : -1;
-    if (filter === 'credit') {
+    const sort = filter === "oldest" ? 1 : -1;
+    if (filter === "credit") {
       query.credit = true;
     }
-    if (filter === 'debit') {
+    if (filter === "debit") {
       query.credit = false;
+    }
+    if (filter === "all") {
+      query = {};
     }
 
     const skip = (Number(page) - 1) * Number(pageSize);
 
     // console.log('Query:', query);
+    const transactions = await Transaction.find(query);
+    console.log("Transactions:", transactions);
 
     const transactions = await Transaction.find(query)
       .sort({ createdAt: sort })
@@ -331,7 +356,7 @@ export async function getTransactions(req: Request, res: Response) {
     // console.log('Transactions:', transactions);
 
     return res.json({
-      message: 'Transactions',
+      message: "Transactions",
       data: transactions,
       page: Number(page),
       pageSize: Number(pageSize),
@@ -339,80 +364,125 @@ export async function getTransactions(req: Request, res: Response) {
       totalPages: Math.ceil(total / Number(pageSize)),
     });
   } catch (err: any) {
-    console.error('Internal server error: ', err.message);
+    console.error("Internal server error: ", err.message);
     return res.status(500).json({
-      message: 'Internal server error',
+      message: "Internal server error",
       error: err.message,
     });
   }
 }
 
-// export async function sendMoney(req: Request, res: Response) {
-//   const senderId = req.user;
+export async function buyDataPlans(req: Request, res: Response) {
+  const userId = req.user;
 
-//   const sender = await User.findById(senderId);
+  const user = await User.findById(userId);
+  if (!user) {
+    console.error("user not found");
+    return res.status(404).json({
+      message: "User not found",
+    });
+  }
 
-//   if (!sender) {
-//     return res.status(404).json({
-//       message: 'Sender not found',
-//     });
-//   }
+  const { dataPlanId, phoneNumber, network, transactionPin } = req.body;
+  const dataPlan = await fetchDataPlan(network, dataPlanId);
+  console.log(dataPlan);
 
-//   const {
-//     amount,
-//     receiverUserId,
-//     note,
-//     transactionPin,
+  if (!dataPlan) {
+    console.error(`Error getting plan ${dataPlan.error}`);
+    return res.status(502).json({
+      message: `Error getting plan`,
+    });
+  }
 
-//   } = req.body;
+  if (dataPlan.error) {
+    console.error(`Error getting plan ${dataPlan.error}`);
+    return res.status(502).json({
+      message: `Error getting plan`,
+    });
+  }
 
-//   try {
-//     const userTransactionPin = sender.transactionPin;
-//     if (!transactionPin || !userTransactionPin || !Bcrypt.compareSync(transactionPin, userTransactionPin)) {
-//       return res.status(400).json({
-//         message: 'Invalid transaction pin',
-//       });
-//     }
+  const amount = Number(dataPlan.meta.fee);
+  const amountInKobo = amount * 100;
+  try {
+    const userBalance = await calculateBalance(userId);
+    user.balance = userBalance;
+    await user.save();
+    if (
+      user.transactionPin !== transactionPin &&
+      !Bcrypt.compareSync(transactionPin, user.transactionPin as string)
+    ) {
+      console.error("invalid pin");
+      return res.status(403).json({
+        message: "Invalid transaction pin",
+      });
+    }
+    if (user.balance < amountInKobo) {
+      console.error("insufficient funds");
+      return res.status(400).json({
+        message: "purchase failed",
+        error: "Insufficient balance",
+      });
+    }
 
-//     if (sender.balance < amount) {
-//       return res.status(400).json({
-//         message: 'Insufficient balance',
-//       });
-//     }
+    const appState = "testing";
 
-//     const receiver = await User.findById(receiverUserId);
+    if (appState === "testing") {
+      const dudTransaction = await Transaction.create({
+        amount: amountInKobo,
+        phoneNumber,
+        network,
+        userId,
+        transactionType: "data",
+        credit: false,
+      });
 
-//     if (!receiver) {
-//       return res.status(404).json({
-//         message: 'Receiver not found',
-//       });
-//     }
+      return res.json({
+        message: "Purchase successful",
+        data: dudTransaction,
+      });
+    }
 
-//     const transaction = new Transaction({
-//       amount,
-//       userId: senderId,
-//       receiver,
-//       note,
-//       transactionType: 'send-money',
-//     });
-//     await transaction.save();
+    //call the data api (blochq)
+    const response = await buyDataFromBloc(dataPlanId, phoneNumber, network);
 
-//     // Update sender's and receiver's balances
-//     sender.balance -= amount;
-//     receiver.balance += amount;
+    if (!response.success) {
+      console.error("purchase failed from bloc");
+      console.error(response);
+      return res.status(400).json(response);
+    }
 
-//     await sender.save();
-//     await receiver.save();
+    const { status, reference } = response.data;
 
-//     res.json({
-//       message: 'Money sent successfully',
-//       data: transaction,
-//     });
-//   } catch (error: any) {
-//     console.log(error);
-//     res.status(500).json({
-//       message: 'Internal server error',
-//       error: error.message,
-//     });
-//   }
-// }
+    if (status !== "successful") {
+      console.error("Airtime purchase not successful");
+      return res.status(400).json({
+        message: "Airtime purchase not successful",
+        data: reference,
+      });
+    }
+    const transaction = new Transaction({
+      amount: amountInKobo,
+      phoneNumber,
+      network,
+      userId,
+      transactionType: "airtime",
+      credit: false,
+      reference,
+      status,
+    });
+    await transaction.save();
+
+    user.balance -= amount;
+    user.save();
+    res.json({
+      message: "successfully purchased airtime",
+      data: transaction,
+    });
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
