@@ -57,7 +57,9 @@ jobs:
                 run: yarn build
 
               - name: Build Project Artifacts
+                working-directory: Frontend
                 run: vercel build --token=TKerx8tTIzbyH0v1eyieUM8n
 
               - name: Deploy Project Artifacts
+                working-directory: Frontend
                 run: vercel deploy --prebuilt --token=TKerx8tTIzbyH0v1eyieUM8n
