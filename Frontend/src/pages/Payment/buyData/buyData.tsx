@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Api from "../../../api.config";
 import Topbar from "../../../components/shared/topbar/Topbar";
 import Sidebar from "../../../components/shared/sidebar/Sidebar";
