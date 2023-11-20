@@ -304,7 +304,7 @@ export async function getTransactions(req: Request, res: Response) {
         error: "Unauthorised",
       });
     }
-    const { search, filter } = req.query;
+    const { search = "", filter = "", page = 1, pageSize = 10 } = req.query;
     let query: any = { userId: req.user };
     if (search) {
       query.$or = [
@@ -317,130 +317,48 @@ export async function getTransactions(req: Request, res: Response) {
         { dataPlan: { $regex: search as string, $options: "i" } },
         { electricityMeterNo: { $regex: search as string, $options: "i" } },
         { note: { $regex: search as string, $options: "i" } },
+        { transactionType: { $regex: search as string, $options: "i" } },
+        { accountName: { $regex: search as string, $options: "i" } },
+        { accountNumber: { $regex: search as string, $options: "i" } },
+        { bankName: { $regex: search as string, $options: "i" } },
+        { phoneNumber: { $regex: search as string, $options: "i" } },
+        { network: { $regex: search as string, $options: "i" } },
+        { dataPlan: { $regex: search as string, $options: "i" } },
+        { electricityMeterNo: { $regex: search as string, $options: "i" } },
+        { note: { $regex: search as string, $options: "i" } },
       ];
     }
-    if (filter === "sucessfully" || filter === "failed") {
-      query.status = filter;
+    const sort = filter === "oldest" ? 1 : -1;
+    if (filter === "credit") {
+      query.credit = true;
     }
-    if (filter === "true" || filter === "false") {
-      query.credit = filter;
+    if (filter === "debit") {
+      query.credit = false;
     }
     if (filter === "all") {
       query = {};
     }
+
+    const skip = (Number(page) - 1) * Number(pageSize);
+
     // console.log('Query:', query);
-    const transactions = await Transaction.find(query);
-    console.log("Transactions:", transactions);
+
+    const transactions = await Transaction.find(query)
+      .sort({ createdAt: sort })
+      .skip(skip)
+      .limit(Number(pageSize));
+
+    const total = await Transaction.countDocuments(query);
+    // console.log('Transactions:', transactions);
+
     return res.json({
       message: "Transactions",
       data: transactions,
+      page: Number(page),
+      pageSize: Number(pageSize),
+      total,
+      totalPages: Math.ceil(total / Number(pageSize)),
     });
-  } catch (err: any) {
-    console.error("Internal server error: ", err.message);
-    return res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
-  }
-}
-
-export async function getNetwork(req: Request, res: Response) {
-  try {
-    const Authorization = `Bearer ${bloc_secret}`;
-    axios
-      .get("https://api.blochq.io/v1/bills/operators?bill=telco", {
-        headers: {
-          Authorization,
-        },
-      })
-      .then((response) => {
-        const { success } = response.data;
-        if (success) {
-          const summary = response.data.data.map((item: NetworkItem) => ({
-            name: item.name,
-            id: item.id,
-          }));
-          return res.json({
-            message: "Networks",
-            data: summary,
-          });
-        } else {
-          return res.status(502).json({
-            message: "Networks unavailable",
-            error: "Could not fetch networks",
-          });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        return res.status(502).json({
-          message: "Networks unavailable",
-          error: "Could not fetch networks",
-        });
-      });
-  } catch (err: any) {
-    console.error("Internal server error: ", err.message);
-    return res.status(500).json({
-      message: "Internal server error",
-      error: err.message,
-    });
-  }
-}
-
-export async function getDataPlans(req: Request, res: Response) {
-  try {
-    const network = req.query.network as string;
-    const id = TELCOS.find(
-      (telco) => telco.name.toLowerCase() === network.toLowerCase()
-    )?.id;
-    console.log(id);
-    if (!id) {
-      return res.status(400).json({
-        message: "Bad request",
-        error: "Network id not provided",
-      });
-    }
-
-    const Authorization = `Bearer ${bloc_secret}`;
-
-    axios
-      .get(
-        `https://api.blochq.io/v1/bills/operators/${id}/products?bill=telco`,
-        {
-          headers: {
-            Authorization,
-          },
-        }
-      )
-      .then((response) => {
-        const { success } = response.data;
-        if (success) {
-          const plans: PlanReturn[] = [];
-          response.data.data.forEach((item: DataPlan) => {
-            if (item.fee_type === "FIXED") {
-              const formatFee = item.meta.fee.split(".")[0];
-              item.meta.fee = formatFee;
-              plans.push({ id: item.id, meta: item.meta });
-            }
-          });
-          return res.json({
-            message: "Data Plans",
-            data: plans,
-          });
-        } else {
-          return res.status(502).json({
-            message: "Data Plans unavailable",
-            error: "Could not fetch data plans",
-          });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        return res.status(502).json({
-          message: "Data Plans unavailable",
-          error: "Could not fetch data plans",
-        });
-      });
   } catch (err: any) {
     console.error("Internal server error: ", err.message);
     return res.status(500).json({
