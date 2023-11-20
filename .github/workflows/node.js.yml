@@ -55,11 +55,11 @@ jobs:
     - name: Install dependencies
       working-directory: Frontend
       run: yarn --ignore-engines --frozen-lockfile
-      run: yarn install
+      # run: yarn install
     - name: use Node.js
       working-directory: Frontend
       run: yarn --ignore-engines --frozen-lockfile
-    - run: yarn --ignore-engines --frozen-lockfile 
+    # - run: yarn --ignore-engines --frozen-lockfile 
 
 
   Frontend-build:
