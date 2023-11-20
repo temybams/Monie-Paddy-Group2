@@ -5,24 +5,55 @@ on:
     branches-ignore: [ "develop" ]
 
 jobs:
-    Deploy-Preview:
-        runs-on: ubuntu-latest
-        needs: [Frontend-build]
+  Frontend-install:
 
-        env:
-          VERCEL_ORG_ID: team_d59eQEKtLRnmcMLDwroxOIMX
-          VERCEL_PROJECT_ID: prj_sRIXzhI3Ar7At1QezOw3S8j9oIZW
+    runs-on: ubuntu-latest
 
-        steps:
-            - uses: actions/checkout@v3
-            - name: Install Vercel CLI
-              run: yarn global add vercel
-            
-            - name: Pull Vercel Environment Information
-              run: vercel pull --yes --environment=preview --token=TKerx8tTIzbyH0v1eyieUM8n
+    steps:
+    - uses: actions/checkout@v3
+    - name: use Node.js
+      working-directory: Frontend
+      run: yarn --ignore-engines --frozen-lockfile
+    - run: yarn --ignore-engines --frozen-lockfile 
 
-            - name: Build Project Artifacts
-              run: vercel build --token=TKerx8tTIzbyH0v1eyieUM8n
 
-            - name: Deploy Project Artifacts
-              run: vercel deploy --prebuilt --token=TKerx8tTIzbyH0v1eyieUM8n
+  Frontend-build:
+
+    runs-on: ubuntu-latest
+    needs: Frontend-install 
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: use Node.js
+      working-directory: Frontend
+      run: yarn --ignore-engines --frozen-lockfile
+    - name: build frontend
+      working-directory: Frontend
+      run: yarn build
+      
+  Deploy-Preview:
+          runs-on: ubuntu-latest
+          needs: [Frontend-build]
+
+          env:
+            VERCEL_ORG_ID: team_d59eQEKtLRnmcMLDwroxOIMX
+            VERCEL_PROJECT_ID: prj_sRIXzhI3Ar7At1QezOw3S8j9oIZW
+
+          steps:
+              - uses: actions/checkout@v3
+              - name: Install Vercel CLI
+                run: yarn global add vercel
+              
+              - name: Pull Vercel Environment Information
+                run: vercel pull --yes --environment=preview --token=TKerx8tTIzbyH0v1eyieUM8n
+
+              - name: Build Project Artifacts
+                run: vercel build --token=TKerx8tTIzbyH0v1eyieUM8n
+
+              - name: Deploy Project Artifacts
+                run: vercel deploy --prebuilt --token=TKerx8tTIzbyH0v1eyieUM8n
