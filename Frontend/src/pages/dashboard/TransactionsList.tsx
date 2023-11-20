@@ -50,8 +50,8 @@ function TransactionList({ transactions }: TransactionListProps) {
               <PiBankFill size={32} />
             </HoldIcon>
             <HoldNames>
-              <ActName>{trans.accountName}</ActName>
-              <BankName>{trans.bankName}</BankName>
+              <ActName>{trans.accountName || trans.phoneNumber || trans.dataPlan}</ActName>
+              <BankName>{trans.bankName || trans.network}</BankName>
             </HoldNames>
           </DetailWrap>
           <Amount credit={trans.credit}>
