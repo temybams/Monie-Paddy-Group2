@@ -82,7 +82,7 @@ jobs:
     needs: [Frontend-build]
 
     env:
-    VERCEL_ORG_ID: team_d59eQEKtLRnmcMLDwroxOIMX
+    VERCEL_ORG_ID: d59eQEKtLRnmcMLDwroxOIMX
     VERCEL_PROJECT_ID: prj_sRIXzhI3Ar7At1QezOw3S8j9oIZW
 
     steps:
