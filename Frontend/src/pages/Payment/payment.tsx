@@ -7,7 +7,9 @@ import Wallet from "./assets/Wallet.png";
 import Connection from "./assets/Connection.png";
 import Bolt from "./assets/Bolt.png";
 
+
 // import "./payment.css"
+
 
 export default function payment() {
   return (

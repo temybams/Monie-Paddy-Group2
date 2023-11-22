@@ -26,7 +26,7 @@ export default function Airtime() {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    // console.log(formData);
+    
 
     Api.post("/transactions/airtime", formData, {})
       .then((res) => {
