@@ -46,13 +46,6 @@ export const signup = async (req: Request, res: Response) => {
 
 export async function login(req: Request, res: Response) {
   try {
-    // if (req.url.startsWith("/google/redirect?code=")) {
-    //   //google login
-    //   const token = generateToken(req.user, res);
-    //   const clientUrl = process.env.CLIENT_URL;
-    //   return res.redirect(`${clientUrl}/sso?token=${token}`);
-    // }
-
     //manual login
     const { email, password } = req.body;
     // Check if a user with the same email already exists
