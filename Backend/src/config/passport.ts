@@ -7,7 +7,7 @@ config();
 
 export default function passportSetup() {
   try {
-    const callbackURL = process.env.GOOGLE_REDIRECT_URL;
+    const callbackURL = process.env.GOOGLE_REDIRECT_URL || process.env.GOOGLE_VERCEL_REDIRECT_URL;
 
     passport.use(
       new GoogleStrategy(
