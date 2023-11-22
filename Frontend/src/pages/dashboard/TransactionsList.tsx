@@ -47,7 +47,8 @@ function TransactionList({ transactions }: TransactionListProps) {
         <Entry>
           <DetailWrap>
             <HoldIcon>
-              <PiBankFill size={32} />
+              {" "}
+              <PiBankFill size={32} />{" "}
             </HoldIcon>
             <HoldNames>
               <ActName>{trans.accountName}</ActName>
@@ -55,11 +56,9 @@ function TransactionList({ transactions }: TransactionListProps) {
             </HoldNames>
           </DetailWrap>
           <Amount credit={trans.credit}>
-            <span>
-              {trans.credit
-                ? `+${formatBalance(trans.amount)}`
-                : `-${formatBalance(trans.amount)}`}
-            </span>
+            {trans.credit
+              ? `+${formatBalance(trans.amount)}`
+              : `-${formatBalance(trans.amount)}`}
           </Amount>
         </Entry>
       ))}

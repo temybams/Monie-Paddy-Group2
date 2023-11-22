@@ -50,6 +50,6 @@ export const BankName = styled.span`
 `;
 export const Amount = styled.div<{ credit: boolean }>`
   text-align: center;
-  color: ${({ credit }) => (credit ? "green" : "red")};
+  color: ${(props) => (props.credit ? "green" : "red")};
   font-weight: 600;
 `;
