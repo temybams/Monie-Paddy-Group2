@@ -19,11 +19,13 @@ import {
 } from "./Signup.style";
 import googleLogo from "/google-logo.svg";
 import Rectangle from "/Rectangleii.jpg";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Api from "../../api.config";
 import { useGoogleLogin } from "@react-oauth/google";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Signup() {
   const [signUpData, setSignUpData] = useState({
@@ -34,6 +36,7 @@ function Signup() {
     bvn: "",
   });
   const [submit, setSubmit] = useState(false);
+  const [signBtnDisabled, setSignBtnDisabled] = useState(true);
   const navigate = useNavigate();
 
   const login = useGoogleLogin({
@@ -91,6 +94,9 @@ function Signup() {
           const { message } = res.data;
           console.log(message);
           console.log("login successful");
+          toast.success("Signup successful! Please login.", {
+            position: "top-right",
+          });
           setSignUpData({
             email: "",
             password: "",
@@ -99,16 +105,26 @@ function Signup() {
             bvn: "",
           });
           setSubmit(false);
-          navigate("/login");
+          setSignBtnDisabled(false);
+          setTimeout(() => {
+            navigate("/login");
+          }, 3000);
         })
         .catch((err) => {
           if (err.response) {
             const errorCode = err.response.status;
             console.error(`Problem occured received status: ${errorCode}`);
+            toast.error(`Signup failed. Status: ${errorCode}`, {
+              position: "top-right",
+            });
           } else {
             console.error("Did not receive response");
           }
           console.log("login failed", err.response);
+          toast.error("Signup failed. Please try again later.", {
+            position: "top-right",
+          });
+
           setSignUpData({
             email: "",
             password: "",
@@ -117,6 +133,7 @@ function Signup() {
             bvn: "",
           });
           setSubmit(false);
+          setSignBtnDisabled(true);
         });
     }
   }
@@ -125,6 +142,19 @@ function Signup() {
     const { name, value } = e.target;
     setSignUpData({ ...signUpData, [name]: value });
   }
+
+  useEffect(() => {
+    // Check if all required fields are filled
+    const isFormComplete =
+      signUpData.fullName &&
+      signUpData.email &&
+      signUpData.phoneNumber &&
+      signUpData.bvn &&
+      signUpData.password;
+
+    // Update the disabled state of the button
+    setSignBtnDisabled(!isFormComplete);
+  }, [signUpData]);
 
   return (
     <Wrapper>
@@ -218,7 +248,9 @@ function Signup() {
               />
             </div>
             <div className="mt-5">
-              <SubmitForm type="submit">Sign Up</SubmitForm>
+              <SubmitForm type="submit" disabled={signBtnDisabled}>
+                Sign Up
+              </SubmitForm>
             </div>
           </form>
           <div className="d-flex" style={{ gap: "8px" }}>
@@ -241,6 +273,7 @@ function Signup() {
           <StyledImage src={Rectangle} alt="Description" />
         </FounderSide>
       </div>
+      <ToastContainer />
     </Wrapper>
   );
 }

@@ -18,15 +18,18 @@ import {
   Text,
 } from "./Login.style";
 import googleLogo from "/google-logo.svg";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Rectangleii from "/Rectangle.jpg";
 import axios from "axios";
 import Api from "../../api.config";
 import { useGoogleLogin } from "@react-oauth/google";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function LoginPage() {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const [btnDisabled, setBtnDisabled] = useState(true);
   const [submit, setSubmit] = useState(false);
   const navigate = useNavigate();
   const login = useGoogleLogin({
@@ -44,6 +47,7 @@ function LoginPage() {
           Api.post(`/auth/google/redirect`, res.data)
             .then((response) => {
               const { message } = response.data;
+
               navigate("/dashboard");
               console.log(message);
               setSubmit(false);
@@ -70,6 +74,7 @@ function LoginPage() {
     event.preventDefault();
     if (!submit) {
       setSubmit(true);
+      setBtnDisabled(true);
       console.log("submitting form");
       console.log(loginData);
       Api.post("/auth/login", loginData)
@@ -77,20 +82,36 @@ function LoginPage() {
           const { message } = res.data;
           console.log(message);
           console.log("login successful");
+          toast.success("Login successful!", {
+            position: "top-right",
+            autoClose: 5000,
+          });
           setLoginData({ email: "", password: "" });
           setSubmit(false);
-          navigate("/dashboard");
+          setBtnDisabled(false);
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 3000);
         })
         .catch((err) => {
           if (err.response) {
             const errorCode = err.response.status;
             console.error(`Problem occured received status: ${errorCode}`);
+            toast.error(`Login failed. Status: ${errorCode}`, {
+              position: "top-right",
+              autoClose: 5000,
+            });
           } else {
             console.error("Did not receive response");
+            toast.error("Login failed. Please try again later.", {
+              position: "top-right",
+              autoClose: 5000,
+            });
           }
           console.log("login failed", err.response);
           setLoginData({ email: "", password: "" });
           setSubmit(false);
+          setBtnDisabled(true);
         });
     }
   }
@@ -106,6 +127,14 @@ function LoginPage() {
     const { name, value } = e.target;
     setLoginData({ ...loginData, [name]: value });
   }
+
+  useEffect(() => {
+    // Check if all required fields are filled
+    const isFormComplete = loginData.email && loginData.password;
+
+    // Update the disabled state of the button
+    setBtnDisabled(!isFormComplete);
+  }, [loginData]);
 
   return (
     <Wrapper>
@@ -157,7 +186,9 @@ function LoginPage() {
               />
             </div>
             <div className="mt-5">
-              <SubmitForm type="submit">Sign In</SubmitForm>
+              <SubmitForm type="submit" disabled={btnDisabled}>
+                Sign In
+              </SubmitForm>
             </div>
           </form>
           <div className="d-flex" style={{ gap: "8px" }}>
@@ -166,7 +197,7 @@ function LoginPage() {
           </div>
         </SignupSide>
         <FounderSide className="col col-12 col-lg-7">
-        <Text>
+          <Text>
             It takes 20 years to build a reputation and five minutes to ruin it.
             If you think about that, you’ll do things differently.
           </Text>
@@ -175,6 +206,7 @@ function LoginPage() {
           <StyledImage src={Rectangleii} alt="Description" />
         </FounderSide>
       </div>
+      <ToastContainer />
     </Wrapper>
   );
 }
