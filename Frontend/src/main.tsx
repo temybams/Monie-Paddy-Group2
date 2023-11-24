@@ -8,7 +8,7 @@ import "./index.css";
 
 const queryClient = new QueryClient();
 const { VITE_APP_GOOGLE_CLIENT_ID } = import.meta.env;
-console.log(import.meta.env);
+// console.log(import.meta.env);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <GoogleOAuthProvider clientId={VITE_APP_GOOGLE_CLIENT_ID}>

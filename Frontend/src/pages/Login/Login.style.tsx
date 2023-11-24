@@ -1,4 +1,5 @@
 import { styled } from "styled-components";
+
 export const Wrapper = styled.div`
   width: 100%;
   max-width: 1680px;
@@ -14,6 +15,7 @@ export const SignupSide = styled.div`
     min-height: 100vh;
   }
 `;
+
 
 export const FounderSide = styled.div`
   background-color: #e3f1fe;
@@ -124,6 +126,13 @@ export const SubmitForm = styled.button`
   &:hover {
     opacity: 0.8;
   }
+  ${(props) =>
+    props.disabled &&
+    `
+      background-color: #ddd; 
+      cursor: not-allowed;
+     
+    `}
 `;
 
 export const StyledImage = styled.img`

@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import '../../App.css'
+import styled from "styled-components";
+import "../../App.css";
 
 export const Wrapper = styled.div`
   width: 100%;
@@ -18,7 +18,7 @@ export const SignupSide = styled.div`
 `;
 
 export const FounderSide = styled.div`
-  background: #00AFB9;
+  background: #00afb9;
 
   @media (min-width: 768px) {
     min-height: 100vh;
@@ -39,8 +39,6 @@ export const RegisterBox = styled.div`
   flex-direction: column;
   justify-content: space-between;
   font-family: Inter;
-  
-
 `;
 
 export const GoogleSignin = styled.a`
@@ -129,6 +127,13 @@ export const SubmitForm = styled.button`
   &:hover {
     opacity: 0.8;
   }
+  ${(props) =>
+    props.disabled &&
+    `
+      background-color: #ddd; 
+      cursor: not-allowed;
+     
+    `}
 `;
 
 export const ExtLink = styled.a`
