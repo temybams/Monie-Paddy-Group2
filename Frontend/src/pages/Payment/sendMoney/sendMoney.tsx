@@ -251,7 +251,9 @@ function SendMoney() {
               />
             </div>
             <br />
-            <SubmitForm>{submit1 ? "Processing..." : "Proceed"}</SubmitForm>
+            <SubmitForm disabled={submit1 || !selectedBank.value || account_number.length !== 10}>
+          {submit1 ? "Processing..." : "Proceed"}
+        </SubmitForm>
           </form>
 
           <p style={{ color: "red" }}>{feedback1}</p>
@@ -306,7 +308,9 @@ function SendMoney() {
               />
             </div>
             <br />
-            <SubmitForm>{submit1 ? "Processing..." : "Pay"}</SubmitForm>
+            <SubmitForm disabled={submit1 || !amount || !note || pin.length !== 4}>
+          {submit1 ? "Processing..." : "Pay"}
+        </SubmitForm>
           </form>
           <p style={{ color: "red" }}>{feedback1}</p>
         </FormWrapper>
