@@ -4,6 +4,7 @@ import App from "./App";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import "bootstrap/dist/css/bootstrap.min.css";
+
 import "./index.css";
 
 const queryClient = new QueryClient();

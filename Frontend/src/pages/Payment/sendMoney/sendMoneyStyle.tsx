@@ -97,6 +97,13 @@ export const SubmitForm = styled.button`
   &:hover {
     opacity: 0.8;
   }
+  ${(props) =>
+    props.disabled &&
+    `
+      background-color: #ddd; 
+      cursor: not-allowed;
+     
+    `}
 `;
 
 

@@ -27,6 +27,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 function LoginPage() {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [btnDisabled, setBtnDisabled] = useState(true);
@@ -212,3 +213,5 @@ function LoginPage() {
 }
 
 export default LoginPage;
+
+

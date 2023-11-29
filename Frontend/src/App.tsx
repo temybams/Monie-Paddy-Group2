@@ -10,6 +10,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import CreatePin from "./components/shared/modal/TransactionPin";
 import DataPurchase from "./pages/Payment/buyData/buyData";
 
+
 function App() {
   return (
     <BrowserRouter>
